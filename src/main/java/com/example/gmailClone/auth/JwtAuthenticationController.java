@@ -1,6 +1,5 @@
 package com.example.gmailClone.auth;
 
-import com.example.gmailClone.JWT.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

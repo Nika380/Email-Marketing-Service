@@ -4,6 +4,7 @@ import com.example.gmailClone.dto.BulkEmail;
 import com.example.gmailClone.service.SendEmails.SendEmailsServiceImpl;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -16,6 +17,7 @@ public class MailSenderController {
     private final SendEmailsServiceImpl emailsService;
 
     @PostMapping("/send-bulk")
+    @PreAuthorize("hasAuthority('USER')")
     public void sendBulkMail(@RequestBody BulkEmail bulkEmail) throws MessagingException, UnsupportedEncodingException {
         emailsService.sendBulkEmail(bulkEmail);
     }

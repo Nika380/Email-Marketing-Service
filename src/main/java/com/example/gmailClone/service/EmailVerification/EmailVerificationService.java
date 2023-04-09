@@ -48,7 +48,11 @@ public class EmailVerificationService implements EmailVerificationServiceInterfa
             var userOTP = otpRepo.findByUserEmail(mailDto.getMailTo())
                     .orElseThrow(() -> new RuntimeException("User Not Found"));
 
+            var timeNow = LocalDateTime.now();
             userOTP.setOTP(OTP);
+            userOTP.setCreatedAt(timeNow);
+            userOTP.setExpiresAt(timeNow.plusMinutes(30));
+            userOTP.setConfirmedAt(null);
             otpRepo.save(userOTP);
         } else {
             otpRepo.save(new OTPEntity(mailDto.getMailTo(), OTP));
