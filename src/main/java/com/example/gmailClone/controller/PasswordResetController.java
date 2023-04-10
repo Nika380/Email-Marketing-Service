@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/auth/reset-password")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class PasswordResetController {
     private final PasswordResetServiceImp passwordResetService;
 
