@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/send-mail")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class MailSenderController {
 
     private final SendEmailsServiceImpl emailsService;
