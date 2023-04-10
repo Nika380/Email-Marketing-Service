@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/email")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class EmailVerificationController {
     private final EmailVerificationService emailVerificationService;
 

@@ -24,6 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    @CrossOrigin("*")
     public RegisterDto registerUser(@RequestBody RegisterDto user) throws MessagingException, UnsupportedEncodingException {
         return userService.addUser(user);
     }

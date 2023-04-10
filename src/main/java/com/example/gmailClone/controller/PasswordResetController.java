@@ -1,6 +1,7 @@
-package com.example.gmailClone.service.PasswordReset;
+package com.example.gmailClone.controller;
 
 import com.example.gmailClone.dto.PasswordResetDto;
+import com.example.gmailClone.service.PasswordReset.PasswordResetServiceImp;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/auth/reset-password")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class PasswordResetController {
     private final PasswordResetServiceImp passwordResetService;
 
