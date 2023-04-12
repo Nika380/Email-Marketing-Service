@@ -1,6 +1,8 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Header = () => {
+    const navigate = useNavigate();
   return (
     <div className='header'>
         <div className="logo">
@@ -18,7 +20,7 @@ const Header = () => {
             <button className="register">
                 Register
             </button>
-            <button className="login">
+            <button className="login" onClick={() => navigate('/login')}>
                 Sign In
             </button>
         </div>

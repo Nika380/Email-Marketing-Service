@@ -1,55 +1,55 @@
-import { Button, TextField } from "@mui/material"
+import { Button, Stack, TextField } from "@mui/material"
 import { API } from "../utils/API"
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import AuthContext from "../context/AuthProvider"
+
 
 export const LoginPage = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const {setAuth} : any = useContext(AuthContext);
 
-    const login = async () => {
-        console.log("words");
+    const login = async (e: any) => {
+        e.preventDefault();
        try{
         const response = await API.post('/auth/authenticate',{
             email: email,
             password: password
            });
            console.log(response);
-           localStorage.setItem('jwtToken', response.data.jwtToken);
+           if(response.status === 200) {
+                const now = new Date();
+                const expireTime = now.getTime() + 30 * 60 * 1000;
+                const tokenData = {
+                    token: response.data.jwtToken,
+                    expireTime: expireTime
+                  };
+                localStorage.setItem('jwtToken', JSON.stringify(tokenData));
+                setAuth(true);
+                navigate('/dashboard')
+           }
        } catch (error) {
         console.log(error);
        }
-    }
-
-    const test = async () => {
-        const jwtToken = localStorage.getItem('jwtToken');
-        if (!jwtToken) {
-            console.log('JWT token not found');
-            return;
-        }
+    } 
     
-        try {
-            console.log("In Try Box")
-            console.log(jwtToken)
-            const response = await API.get("/test", {
-                headers: {
-                  Authorization: `Bearer ${jwtToken}`
-                }
-            });
-            console.log(response);
-        } catch (error) {
-            console.log("Int Catch Box")
-            console.log('Error:', error);
-        }
-    };
     
     return (
         <div className="login-page">
+            <h1 className="title">Sign In</h1>
             <div className="login-form">
-                <TextField type="email" className="email-input" onChange={(e) => setEmail(e.target.value)}/>
-                <TextField type="password" onChange={(e) => setPassword(e.target.value)} />
-                <Button onClick={login}>Login</Button>
-                <Button onClick={test}>Test</Button>
+                <Stack sx={{width:"400px"}} spacing={5}>
+                    <TextField type="email" label="Email" onChange={(e) => setEmail(e.target.value)}/>
+                    <TextField type="password" label="Password" onChange={(e) => setPassword(e.target.value)}/>
+                </Stack>
+                
+                <Stack sx={{width:"400px"}} spacing={5} direction="row" className="buttons">
+                    <Button className="register-btn" variant="outlined">Register</Button>
+                    <Button className="login-btn" variant="contained" onClick={(e) => login(e)}>Login</Button>
+                </Stack>
             </div>
         </div>
     )
