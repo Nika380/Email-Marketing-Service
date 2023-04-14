@@ -15,7 +15,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     
     useEffect(() => {
         const checkAuth = JSON.parse(localStorage.getItem("jwtToken") || "null");
-        console.log(checkAuth?.token)
         if(checkAuth?.token != null && checkAuth?.expireTime > new Date()) {
             setAuth(true);
         } else {
@@ -24,9 +23,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         }
     }, [])
     
-    useEffect(() => {
-      console.log(auth)
-    }, [localStorage])
 
   return (
     <AuthContext.Provider value={{auth, setAuth}}>

@@ -1,0 +1,71 @@
+.register-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 30px;
+    .title{
+        font-family: Urbanist;
+        font-style: italic;
+        font-weight: 300;
+        font-size: 32px;
+        line-height: 39px;
+        color: #212121;
+    }
+    .register-form{
+        width: 500px;
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        position: relative;
+        .firstname{
+            width: 180px;
+        }
+        .lastname{
+            width: 310px;
+        }
+        .email{
+            width: 300px;
+        }
+
+        .birth-label {
+            position: absolute;
+            right: 25%;
+            top: -20px;
+            font-size: 14px;
+          }
+          
+          .birthdate {
+            position: relative;
+            width: 190px;
+          }
+          .register-btn{
+            width: 144px;
+            height: 40px;
+            border: 1px solid #8591FF;
+            border-radius: 15px;
+            font-family: 'Urbanist';
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 38px;
+            color: #000000;
+            text-transform: none;
+        }
+        .login-btn{
+            width: 130px;
+            height: 40px;
+            background: #8591FF;
+            border-radius: 15px;
+            font-family: 'Urbanist';
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 38px;
+            color: #F5F5F5;
+            text-transform: none;
+        }
+    }
+}

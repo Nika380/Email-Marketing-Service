@@ -19,7 +19,6 @@ export const LoginPage = () => {
             email: email,
             password: password
            });
-           console.log(response);
            if(response.status === 200) {
                 const now = new Date();
                 const expireTime = now.getTime() + 30 * 60 * 1000;
@@ -47,7 +46,7 @@ export const LoginPage = () => {
                 </Stack>
                 
                 <Stack sx={{width:"400px"}} spacing={5} direction="row" className="buttons">
-                    <Button className="register-btn" variant="outlined">Register</Button>
+                    <Button className="register-btn" variant="outlined" onClick={() => navigate('/register')}>Register</Button>
                     <Button className="login-btn" variant="contained" onClick={(e) => login(e)}>Login</Button>
                 </Stack>
             </div>
