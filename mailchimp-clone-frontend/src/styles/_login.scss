@@ -1,0 +1,52 @@
+
+.login-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    .title{
+        font-family: 'Urbanist';
+        font-style: italic;
+        font-weight: 300;
+        font-size: 32px;
+        line-height: 39px;
+        color: #212121;
+
+    }
+    .login-form{
+        height: 60vh;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        .buttons{
+            justify-content: center;
+        }
+        .register-btn{
+            width: 144px;
+            height: 40px;
+            border: 1px solid #8591FF;
+            border-radius: 15px;
+            font-family: 'Urbanist';
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 38px;
+            color: #000000;
+            text-transform: none;
+        }
+        .login-btn{
+            width: 130px;
+            height: 40px;
+            background: #8591FF;
+            border-radius: 15px;
+            font-family: 'Urbanist';
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 38px;
+            color: #F5F5F5;
+            text-transform: none;
+        }
+    }
+}

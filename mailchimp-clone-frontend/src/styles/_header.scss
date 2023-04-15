@@ -1,0 +1,90 @@
+$signInButton: "#786AC9";
+
+@font-face {
+    font-family: Urbanist;
+    src: url('../fonts/Urbanist-VariableFont_wght.ttf');
+}
+.header{
+    height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #f5f5f5;
+    .logo{
+        width: 15%;
+    }
+    .info-list{
+        display: flex;
+        align-items: center;
+        width: 60%;
+        ul{
+            display: flex;
+            list-style: none;
+            width: 250px;
+            justify-content: space-between;
+            li{
+                font-family: 'Urbanist';
+                font-style: normal;
+                font-weight: 300;
+                font-size: 25px;
+                line-height: 30px;
+                color: #000000;
+            }
+        }
+    }
+
+    .login-section{
+        width: 250px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        .register{
+            font-family: 'Urbanist';
+            font-style: normal;
+            font-weight: 300;
+            font-size: 25px;
+            line-height: 30px;
+            color: #000000;
+            background:none;
+            border: none;
+        }
+        .login, .logout{
+            width: 126px;
+            height: 50px;
+            left: 1167px;
+            top: 33px;
+            background: #786AC9;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Urbanist';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 25px;
+            line-height: 30px;
+            color: #F5F5F5;
+        }
+    }
+    .select-language{
+        position: relative;
+        border: 0px;
+        width: 69px;
+        height: 50px;
+        background: #F3F2F2;
+        border-radius: 12px;
+        outline: 0px;
+        select{
+            border: none;
+            outline: none;
+        }
+        option{
+            font-family: 'Urbanist';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 22px;
+            color: #212121;
+            border: none;
+        }
+    }
+}

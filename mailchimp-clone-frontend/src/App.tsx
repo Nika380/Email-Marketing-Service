@@ -1,12 +1,15 @@
-import React from 'react';
 import "./styles/styles.scss"
-
+import { BrowserRouter} from 'react-router-dom';
+import RouteComp from './routes/RouteComp';
 
 function App() {
-  return (
-    <div className="App">
+  
 
-    </div>
+  
+  return (
+      <BrowserRouter>
+        <RouteComp />
+      </BrowserRouter>
   );
 }
 
