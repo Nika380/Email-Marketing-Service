@@ -49,6 +49,8 @@ export const LoginPage = () => {
                     <Button className="register-btn" variant="outlined" onClick={() => navigate('/register')}>Register</Button>
                     <Button className="login-btn" variant="contained" onClick={(e) => login(e)}>Login</Button>
                 </Stack>
+
+                <Button sx={{textTransform:'none', textDecoration:'underline'}} onClick={() => navigate('/reset-password')}>Forget Password</Button>
             </div>
         </div>
     )
