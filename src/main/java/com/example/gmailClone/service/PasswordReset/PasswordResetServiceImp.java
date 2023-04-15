@@ -8,6 +8,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -78,6 +79,16 @@ public class PasswordResetServiceImp implements PasswordResetInterface{
 
     }
 
+    public ResponseEntity<String> checkOtp (String email, String userOtp) {
+        var otp = otpRepo.findByUserEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        if(otp.getOTP().equals(userOtp)) {
+            return ResponseEntity.ok("Match");
+        } else {
+            return ResponseEntity.badRequest().body("Does not Match");
+        }
+
+    }
     public static String generateOTP() {
         Random random = new Random();
         int OTP = 100000 + random.nextInt(900000);
