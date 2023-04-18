@@ -1,5 +1,5 @@
 import React, { useContext , useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import HomePage from '../pages/HomePage'
 import { LoginPage } from '../pages/LoginPage'
 import Dashboard from '../pages/Dashboard';
@@ -10,17 +10,19 @@ import PasswordReset from '../pages/PasswordReset';
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
     const navigate = useNavigate();
-    
+    const location = useLocation();
   
     useEffect(() => {
         const checkAuth = JSON.parse(localStorage.getItem("jwtToken") || "null");
         const now = new Date();
-        if(checkAuth?.jwtToken !== "" && checkAuth?.expireTime > now) {
+        if(location.pathname === '/dashboard') {
+          if(checkAuth?.jwtToken !== "" && checkAuth?.expireTime > now) {
             setAuth(true)
         } else {
             setAuth(false)
             localStorage.removeItem('jwtToken');
             navigate('/')
+        }
         }
       }, [auth, setAuth])
     

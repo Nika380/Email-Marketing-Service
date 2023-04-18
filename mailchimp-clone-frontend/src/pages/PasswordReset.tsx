@@ -1,13 +1,16 @@
-import { Button, Stack, TextField } from '@mui/material'
+import { Button, FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField } from '@mui/material'
 import React, { useState } from 'react'
-import { Api } from '@mui/icons-material';
+import {  Visibility, VisibilityOff } from '@mui/icons-material';
 import { API } from '../utils/API';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form'; 
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup'
 
 interface resetPasswordInfo {
     email: string,
     otp: string,
-    newPassword: string
+    newPassword: string,
 }
 
 const PasswordReset = () => {
@@ -19,9 +22,25 @@ const PasswordReset = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('Check your email');
     const navigate = useNavigate();
-    const url = "/auth/reset-password/check-otp";
-    const resetEmail = '/auth/reset-password/send-otp/zaaaazz126@gmail.com';
-    const sendResetLink = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const schema = yup.object().shape({
+      password: yup.string().min(8).required(),
+      confirmPassword: yup.string()
+    .nullable()
+    .oneOf([yup.ref('password', {})], 'Passwords does not match')
+    .required('passwords does not match')
+
+
+
+    });
+    const {register, handleSubmit, formState: {errors}} = useForm({
+      resolver: yupResolver(schema)
+    });
+
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  
+  const sendResetLink = () => {
         API.post(`/auth/reset-password/send-otp/${email}`)
         .then(res => {
             if(res.status === 200) {
@@ -35,19 +54,20 @@ const PasswordReset = () => {
         .then(res => {
             if(res.status === 200) {
                 setOtpMatch(true);
-                setLinkSent(false);
+                setMessage("Type New Password");
             } 
         })
     }
 
-    const resetPassword = () => {
+    const resetPassword = (data: any) => {
         const info: resetPasswordInfo = {
             email: email,
             otp: otp,
-            newPassword: password
+            newPassword: password,
         };
+        console.log(data)
 
-        API.post('/auth/reset-password', info)
+          API.post('/auth/reset-password', info)
         .then(res => {
             console.log(res);
             if(res.status === 200) {
@@ -59,7 +79,9 @@ const PasswordReset = () => {
             }
             
         })
-    }
+        }
+  
+
 
 
   return (
@@ -80,13 +102,53 @@ const PasswordReset = () => {
                           <Button sx={{ textTransform: 'none' }} disabled={!linkSent} onClick={checkOtp}>Submit</Button>
                       </Stack>
             </> : 
-            <Stack spacing={2} alignItems='center'>
-                <TextField type='text' label="New Password" sx={{width:'100%'}} onChange={(e) => setPassword(e.target.value)}/>
-                <TextField type='text' label="Confirm Password" sx={{width:'100%'}} onChange={(e) => setConfirmPassword(e.target.value)}/>
-                <Button sx={{textTransform:'none', width:'50%'}} variant='contained' onClick={resetPassword}>Submit</Button>
-            </Stack>
+               <form onSubmit={handleSubmit(resetPassword)}>
+                 <Stack spacing={2} alignItems='center'>
+                  <TextField
+                    type={showPassword ? 'text' : 'password'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={handleClickShowPassword} edge="end">
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    label="Password"
+                    // onChange={(e) => setPassword(e.target.value)}
+                    placeholder="New Password"
+                    {...register("password")}
+                  />
+
+                  <TextField
+                    type={showPassword ? 'text' : 'password'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={handleClickShowPassword} edge="end">
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    label="Confirm Password"
+                    // onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm Password"
+                    helperText={
+                      <FormHelperText style={{ color: 'red' }}>
+                      {errors.confirmPassword?.message?.toString()}
+                    </FormHelperText>
+                    }
+                    {...register("confirmPassword")}
+
+                  />
+                  <Button sx={{textTransform:'none', width:'50%'}} variant='contained' type='submit' >Submit</Button>
+              </Stack>
+               </form>
 
         }
+          
         </div>
     </div>
   )

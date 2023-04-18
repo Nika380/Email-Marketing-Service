@@ -19,7 +19,7 @@ export const LoginPage = () => {
             email: email,
             password: password
            });
-           if(response.status === 200) {
+           if(response.status === 201) {
                 const now = new Date();
                 const expireTime = now.getTime() + 30 * 60 * 1000;
                 const tokenData = {
