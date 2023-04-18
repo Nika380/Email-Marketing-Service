@@ -9,6 +9,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -76,7 +77,7 @@ public class EmailVerificationService implements EmailVerificationServiceInterfa
     }
 
 
-    public String activateEmail(String email, String OTP) {
+    public ResponseEntity<String> activateEmail(String email, String OTP) {
         var user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         var checkUser = otpRepo.findByUserEmail(email)
@@ -88,9 +89,9 @@ public class EmailVerificationService implements EmailVerificationServiceInterfa
             userRepo.save(user);
             checkUser.setConfirmedAt(LocalDateTime.now());
             otpRepo.save(checkUser);
-            return "Account Activated";
+            return ResponseEntity.status(201).body("Account Activated");
         } else {
-            return "Account Not Activated";
+            return ResponseEntity.status(400).body("Account Not Created");
         }
 
     }

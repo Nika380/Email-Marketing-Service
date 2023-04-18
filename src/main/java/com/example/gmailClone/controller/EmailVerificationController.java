@@ -4,6 +4,7 @@ import com.example.gmailClone.dto.MailDto;
 import com.example.gmailClone.service.EmailVerification.EmailVerificationService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class EmailVerificationController {
     }
 
     @GetMapping("/activate/{email}/{OTP}")
-    public String activateMail(@PathVariable String email,@PathVariable String OTP) {
+    public ResponseEntity<String> activateMail(@PathVariable String email, @PathVariable String OTP) {
         return emailVerificationService.activateEmail(email, OTP);
     }
 
