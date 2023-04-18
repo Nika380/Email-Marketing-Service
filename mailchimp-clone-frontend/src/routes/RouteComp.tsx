@@ -1,25 +1,28 @@
 import React, { useContext , useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import HomePage from '../pages/HomePage'
 import { LoginPage } from '../pages/LoginPage'
 import Dashboard from '../pages/Dashboard';
 import AuthContext from '../context/AuthProvider'
 import RegisterPage from '../pages/RegisterPage';
+import PasswordReset from '../pages/PasswordReset';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
     const navigate = useNavigate();
-    
+    const location = useLocation();
   
     useEffect(() => {
         const checkAuth = JSON.parse(localStorage.getItem("jwtToken") || "null");
         const now = new Date();
-        if(checkAuth?.jwtToken !== "" && checkAuth?.expireTime > now) {
+        if(location.pathname === '/dashboard') {
+          if(checkAuth?.jwtToken !== "" && checkAuth?.expireTime > now) {
             setAuth(true)
         } else {
             setAuth(false)
             localStorage.removeItem('jwtToken');
             navigate('/')
+        }
         }
       }, [auth, setAuth])
     
@@ -30,6 +33,7 @@ const RouteComp = () => {
           <Route path='/login' element={<LoginPage />}/>
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/reset-password' element={<PasswordReset />} />
     </Routes>
   )
 }
