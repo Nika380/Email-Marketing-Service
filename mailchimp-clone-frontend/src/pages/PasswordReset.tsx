@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form'; 
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup'
+import { Helmet } from 'react-helmet';
 
 interface resetPasswordInfo {
     email: string,
@@ -86,6 +87,10 @@ const PasswordReset = () => {
 
   return (
     <div className='password-reset'>
+      <Helmet>
+        <title>Reset Password</title>
+      </Helmet>
+      <button className='go-back-btn' onClick={() => navigate(-1)}>Go Back</button>
         <h1 className="title">Reset Password</h1>
         {linkSent && <p className="message">{message}</p>}
         <div className="reset-form">

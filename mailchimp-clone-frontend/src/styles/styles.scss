@@ -21,6 +21,39 @@ button{
     background: #f5f5f5;
 }
 
+.go-back-btn{
+    background: none;
+    font-size: 20px;
+    position: absolute;
+    top: 70px;
+    left: 100px;
+    transition: 300ms ease-in-out;
+    font-family: Urbanist;
+    font-weight: 400;
+    &::after,
+    &::before{
+        content: '';
+        height: 100%;
+        width: 1px;
+        display: inline-block;
+        background-color: black;
+        position: absolute;
+        left: -20px;
+        transform: rotate(45deg);
+        top: -8px;
+        transition: 300ms ease-in-out;
+    }
+    &::after{
+        transform: rotate(-45deg);
+        top: 8px
+    }
+    &:hover{
+        &::before,
+        &::after{
+            left: -30px;
+    }}
+}
+
 @import './header';
 @import './homePageMiddleSection';
 @import './login';

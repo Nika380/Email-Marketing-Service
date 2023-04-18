@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import {Helmet} from 'react-helmet';
+
 const bulkMail = require('../images/bulk-email.png');
 const bombMail = require('../images/bomb-email.png');
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,7 +17,9 @@ const Dashboard = () => {
     <>
     <Header />
       <div className='dashboard'>
-
+        <Helmet>
+          <title>Dashboard</title>
+        </Helmet>
         <div className="send-mails-section">
           <div className="bulk-mail">
             <h1 className="title">Send Bulk Emails</h1>
