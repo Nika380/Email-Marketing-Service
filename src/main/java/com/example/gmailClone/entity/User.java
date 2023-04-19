@@ -67,4 +67,7 @@ public class User {
     )
     private List<Permissions> permissions;
 
+    @OneToMany(mappedBy = "user")
+    private List<BulkMailGroup> bulkMailGroups;
+
 }
