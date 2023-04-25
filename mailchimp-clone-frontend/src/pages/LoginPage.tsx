@@ -22,7 +22,7 @@ export const LoginPage = () => {
            });
            if(response.status === 201) {
                 const now = new Date();
-                const expireTime = now.getTime() + 30 * 60 * 1000;
+                const expireTime = now.getTime() + 15 * 60 * 1000;
                 const tokenData = {
                     token: response.data.jwtToken,
                     expireTime: expireTime
