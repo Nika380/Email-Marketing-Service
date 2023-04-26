@@ -6,6 +6,8 @@ import Dashboard from '../pages/Dashboard';
 import AuthContext from '../context/AuthProvider'
 import RegisterPage from '../pages/RegisterPage';
 import PasswordReset from '../pages/PasswordReset';
+import Groups from '../pages/Groups';
+import EmailLists from '../pages/EmailLists';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
@@ -34,6 +36,8 @@ const RouteComp = () => {
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/reset-password' element={<PasswordReset />} />
+          <Route path='/groups' element={<Groups />}/>
+          <Route path='/email-lists' element={<EmailLists />} />
     </Routes>
   )
 }

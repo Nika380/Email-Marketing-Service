@@ -4,6 +4,7 @@ import {Helmet} from 'react-helmet';
 import { useEffect, useState } from 'react';
 import BulkMailModal from '../modals/BulkMailModal';
 import BombEmailModal from '../modals/BombEmailModal';
+import SideMenu from '../components/SideMenu';
 
 const bulkMail = require('../images/bulk-email.png');
 const bombMail = require('../images/bomb-email.png');
@@ -13,7 +14,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [showBulkModal, setShowBulkModal] = useState<boolean>(false);
-  const [showBombMailModal, setShowBombMailModal] = useState<boolean>(true);
+  const [showBombMailModal, setShowBombMailModal] = useState<boolean>(false);
   const openBulkModal = () => {
     setShowBulkModal(true);
   } 
@@ -30,7 +31,7 @@ const Dashboard = () => {
 
   return (
     <>
-    <Header />
+    <SideMenu page={'dashboard'}/>
       <div className='dashboard'>
         <Helmet>
           <title>Dashboard</title>

@@ -1,0 +1,67 @@
+.side-menu{
+    height: 100vh;
+    width: 70px;
+    background: rgb(102, 21, 159);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 50px 0 50px 0;
+    justify-content: space-between;
+    ul{
+        min-width: 300%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        li{
+            padding-left: 10px;
+            width: 70px;
+            height: 50px;
+            
+            background-color: rgb(102, 21, 159);
+            border-radius: 12px;
+            transition: 150ms ease-in-out;
+            overflow: hidden;
+            &:hover{
+                width: 100%;
+                background-color: rgb(144, 6, 243);
+            }
+            .icon{
+                width: 40px;
+                height: 40px;
+                color: rgb(175, 163, 172);
+            }
+            .link{
+                text-decoration: none;
+                color: white;
+                font-size: 18px;
+                font-family: Urbanist;
+                display: flex;
+                align-items: center;
+                justify-content: stretch;
+                gap: 30px;
+                height: 50px;
+                font-weight: 600;
+                &:hover > .icon{
+                    color: white;
+                }
+            }
+            
+        }
+        .on-page{
+            background-color: rgb(144, 6, 243);
+            color: white;
+            border-radius: 0px;
+            .icon{
+                color: white;
+            }
+        }
+    }
+    .account-menu{
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        width: 70px;
+    }
+}

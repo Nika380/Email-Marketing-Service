@@ -21,7 +21,7 @@ $signInButton: "#786AC9";
         ul{
             display: flex;
             list-style: none;
-            width: 250px;
+            min-width: 350px;
             justify-content: space-between;
             li{
                 font-family: 'Urbanist';
