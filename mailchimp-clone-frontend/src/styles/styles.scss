@@ -25,11 +25,12 @@ button{
     background: none;
     font-size: 20px;
     position: absolute;
-    top: 70px;
-    left: 100px;
+    top: 72px;
+    left: 130px;
     transition: 300ms ease-in-out;
     font-family: Urbanist;
     font-weight: 400;
+    z-index: 1;
     &::after,
     &::before{
         content: '';
@@ -64,3 +65,5 @@ button{
 @import './modals/bomb_mail_modal';
 @import './groups';
 @import './sideMenu';
+@import './group-info';
+@import "./modals/group-name-modal";

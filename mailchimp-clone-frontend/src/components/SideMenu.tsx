@@ -63,12 +63,12 @@ function AccountMenu({logOutFunction}: any) {
           <IconButton
             onClick={handleClick}
             size="small"
-            sx={{ ml: 2 }}
+            sx={{ ml: 1 }}
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            <Avatar sx={{ width: 40, height: 40 }}>NN</Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -83,7 +83,8 @@ function AccountMenu({logOutFunction}: any) {
           sx: {
             overflow: 'visible',
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
+            mt: -11.5,
+            ml: 3,
             '& .MuiAvatar-root': {
               width: 32,
               height: 32,
@@ -94,12 +95,12 @@ function AccountMenu({logOutFunction}: any) {
               content: '""',
               display: 'block',
               position: 'absolute',
-              top: 0,
-              right: 14,
+              bottom: 0,
+              left: 14,
               width: 10,
               height: 10,
               bgcolor: 'background.paper',
-              transform: 'translateY(-50%) rotate(45deg)',
+              transform: 'translateY(50%) rotate(-45deg)',
               zIndex: 0,
             },
           },
