@@ -18,15 +18,19 @@ const Dashboard = () => {
   const openBulkModal = () => {
     setShowBulkModal(true);
   } 
-  const closeBulkModal = () => {
-    setShowBulkModal(false);
+  const closeBulkModal = (event: any) => {
+    if(event.target.classList.contains("close")) {
+      setShowBulkModal(false);
+  }
   }
 
   const openBombMailModal = () => {
     setShowBombMailModal(true);
   } 
-  const closeBombMailModal = () => {
-    setShowBombMailModal(false);
+  const closeBombMailModal = (event: any) => {
+    if(event.target.classList.contains("close")) {
+      setShowBombMailModal(false);
+  }
   }
 
   return (

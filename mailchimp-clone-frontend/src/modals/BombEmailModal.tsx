@@ -44,26 +44,28 @@ const BombEmailModal = ({closeBombModal}: any) => {
     
 
   return (
-    <div className='bomb-mail-modal'>
-        <Stack spacing={3}>
-            <Stack direction="row" spacing={2}>
-                <TextField sx={{width:"80%"}} type='text' label="Sender Name" placeholder='Name User is going to get the mail from' onChange={(e) => setSender(e.target.value)}/>
-                <TextField type='number' label="number of messages" onChange={(e) => setNumber(parseInt(e.target.value))}/>
-            </Stack>
-            <TextField type='text' label="Recipient Email Address" placeholder='Write email address you want to bomb with messages' onChange={(e) => setRecipient(e.target.value)}/>
-            <TextField type='text' label="Body" placeholder='Content of the email' multiline rows={17} onChange={(e) => setEmailBody(e.target.value)}/>
+    <div className='bomb-mail-modal close' onClick={(e) => closeBombModal(e)}>
+        <div className="modal">
+          <Stack spacing={3}>
+              <Stack direction="row" spacing={2}>
+                  <TextField sx={{width:"80%"}} type='text' label="Sender Name" placeholder='Name User is going to get the mail from' onChange={(e) => setSender(e.target.value)}/>
+                  <TextField type='number' label="number of messages" onChange={(e) => setNumber(parseInt(e.target.value))}/>
+              </Stack>
+              <TextField type='text' label="Recipient Email Address" placeholder='Write email address you want to bomb with messages' onChange={(e) => setRecipient(e.target.value)}/>
+              <TextField type='text' label="Body" placeholder='Content of the email' multiline rows={17} onChange={(e) => setEmailBody(e.target.value)}/>
 
-            <Stack direction="row" spacing={3} justifyContent="end">
-              <Button sx={{textTransform:"none"}} color='error' variant='outlined' onClick={() => closeBombModal()}>Cancel</Button>
-              <Button sx={{textTransform:"none"}} variant='contained' onClick={sendBombMail}>Start Bombing</Button>
-            </Stack>
-        </Stack>
+              <Stack direction="row" spacing={3} justifyContent="end">
+                <Button sx={{textTransform:"none"}} color='error' variant='outlined' className='close' onClick={(e) => closeBombModal(e)}>Cancel</Button>
+                <Button sx={{textTransform:"none"}} variant='contained' onClick={sendBombMail}>Start Bombing</Button>
+              </Stack>
+          </Stack>
 
-        {startLoading && 
-        <div className="loading">
-        <CircularProgress />
-        <h1>{loadingText}</h1>
-      </div>}
+          {startLoading && 
+          <div className="loading">
+          <CircularProgress />
+          <h1>{loadingText}</h1>
+        </div>}
+        </div>
     </div>
   )
 }

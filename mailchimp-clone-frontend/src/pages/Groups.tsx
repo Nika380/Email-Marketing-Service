@@ -13,7 +13,7 @@ const Groups = () => {
 
 
         <div className="groups-list">
-          <GroupsComponent groupName1={"name"}/>
+          <GroupsComponent groupName={"name"}/>
           <GroupsComponent />
           <GroupsComponent />
           <GroupsComponent />
