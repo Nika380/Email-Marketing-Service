@@ -1,18 +1,18 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const GroupsComponent = ({groupName}: any) => {
+const GroupsComponent = ({groupName, emailNumber, id}: any) => {
     const navigate = useNavigate();
   return (
-    <div className='groups-component' onDoubleClick={() => navigate(`/groups/${groupName}`)}>
+    <div className='groups-component' onDoubleClick={() => navigate(`/groups/${id}/${groupName}`)}>
         <ul>
             <li>Group Name: </li>
-            <li>Some Name</li>
+            <li>{groupName}</li>
         </ul>
 
         <ul>
             <li>Email Address Count: </li>
-            <li>10</li>
+            <li>{emailNumber}</li>
         </ul>
     </div>
   )

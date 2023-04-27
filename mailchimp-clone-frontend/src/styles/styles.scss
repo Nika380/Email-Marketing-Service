@@ -55,8 +55,24 @@ button{
     }}
 }
 
-@import './header';
-@import './homePageMiddleSection';
+.loading-info{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    h1 {
+        position: absolute;
+        top: 60%;
+        font-family: Urbanist;
+        font-style: italic;
+        font-weight: 300;
+    }
+}
+@import './components/header';
+@import './components/homePageMiddleSection';
 @import './login';
 @import './register';
 @import './dashboard';
@@ -64,6 +80,7 @@ button{
 @import './modals/bulk-modal';
 @import './modals/bomb_mail_modal';
 @import './groups';
-@import './sideMenu';
+@import './components/sideMenu';
 @import './group-info';
 @import "./modals/group-name-modal";
+@import './email-lists';

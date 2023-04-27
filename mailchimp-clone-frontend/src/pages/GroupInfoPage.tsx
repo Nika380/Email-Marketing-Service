@@ -1,11 +1,13 @@
 import { Helmet } from 'react-helmet'
 import SideMenu from '../components/SideMenu'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { Stack, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { SetStateAction, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import ChangeGroupNameModal from '../modals/ChangeGroupNameModal';
+import { API } from '../utils/API';
+import LoadingCube from '../loading-animation/LoadingCube';
 
 const rows = [
     {
@@ -38,12 +40,27 @@ const rows = [
     }
 ]
 
+interface mailList{
+    id: number,
+    mailRecipients: mailRecipients[]
+}
+
+interface mailRecipients {
+    id: number,
+    emailAddress: string
+}
+
 const GroupInfoPage = () => {
     const navigate = useNavigate();
+    const { id, name } = useParams<{ id: string, name: string }>();
+    const groupId = parseInt(id || "");
     const [showGroupChangeModal, setShowGroupChangeModal] = useState<boolean>(false);
-    const [groupName, setGroupName] = useState<string>("Some Name");
+    const [groupName, setGroupName] = useState<string>(name || "");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [mailList, setMailList] = useState<mailList[]>([]);
+    const [isLoading,setIsLoading] = useState<boolean>(true);
+
 
     
 
@@ -70,6 +87,29 @@ const GroupInfoPage = () => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
+
+    const getGroupData = async () => {
+        const jwt = localStorage.getItem("jwtToken");
+        const tok = JSON.parse(jwt || "");
+        try {
+          const response = await API.get(
+            `/groups/group/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${tok?.token}`
+              }
+            }
+          );
+          setMailList(response.data.bulkMailLists)
+          setIsLoading(false);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        getGroupData();
+    }, [])
 
   return (
     <><Helmet>
@@ -100,25 +140,30 @@ const GroupInfoPage = () => {
                         </TableRow>
                     </TableHead>
 
-                    <TableBody>
-                        
-                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                            return (
-                                <TableRow key={row.id}>
-                                    <TableCell>{row.id}</TableCell>
-                                    <TableCell>{row.email}</TableCell>
+                        <TableBody>
+                            {mailList?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                return row.mailRecipients.map((recipient) => {
+                                    console.log(recipient)
+                                return (
+                                    <TableRow key={recipient?.id}>
+                                    <TableCell>{recipient?.id}</TableCell>
+                                    <TableCell>{recipient?.emailAddress}</TableCell>
                                     <TableCell>
-                                        <Stack direction='row' spacing={2}>
-                                        <button className='action-btn'><EditIcon color='info' /></button>
-                                        <button className='action-btn'><DeleteIcon color='error' /></button>
+                                        <Stack direction="row" spacing={2}>
+                                        <button className="action-btn">
+                                            <EditIcon color="info" />
+                                        </button>
+                                        <button className="action-btn">
+                                            <DeleteIcon color="error" />
+                                        </button>
                                         </Stack>
                                     </TableCell>
-                                </TableRow>
-                            )
+                                    </TableRow>
+                                );
+                                });
                             })}
+                        </TableBody>
 
-                        
-                    </TableBody>
                 </Table>
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
@@ -130,6 +175,8 @@ const GroupInfoPage = () => {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     />
             </div>
+            {isLoading && 
+            <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>}
             
             {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} saveNewName={saveNewGroupName}/>}
         </div>
