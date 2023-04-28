@@ -6,6 +6,10 @@ import Dashboard from '../pages/Dashboard';
 import AuthContext from '../context/AuthProvider'
 import RegisterPage from '../pages/RegisterPage';
 import PasswordReset from '../pages/PasswordReset';
+import Groups from '../pages/Groups';
+import EmailLists from '../pages/EmailLists';
+import GroupInfoPage from '../pages/GroupInfoPage';
+import EmailListInfoPage from '../pages/EmailListInfoPage';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
@@ -15,7 +19,7 @@ const RouteComp = () => {
     useEffect(() => {
         const checkAuth = JSON.parse(localStorage.getItem("jwtToken") || "null");
         const now = new Date();
-        if(location.pathname === '/dashboard') {
+        if((location.pathname !== '/login') && (location.pathname !== '/reset-password') && location.pathname !== "/register") {
           if(checkAuth?.jwtToken !== "" && checkAuth?.expireTime > now) {
             setAuth(true)
         } else {
@@ -34,6 +38,10 @@ const RouteComp = () => {
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/reset-password' element={<PasswordReset />} />
+          <Route path='/groups' element={<Groups />}/>
+          <Route path='/groups/:id/:name' element={<GroupInfoPage />}/>
+          <Route path='/email-lists' element={<EmailLists />} />
+          <Route path='/email-lists/:name' element={<EmailListInfoPage />} />
     </Routes>
   )
 }

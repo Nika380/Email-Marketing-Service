@@ -2,7 +2,7 @@ $signInButton: "#786AC9";
 
 @font-face {
     font-family: Urbanist;
-    src: url('../fonts/Urbanist-VariableFont_wght.ttf');
+    src: url('../../fonts/Urbanist-VariableFont_wght.ttf');
 }
 .header{
     height: 100px;
@@ -21,7 +21,7 @@ $signInButton: "#786AC9";
         ul{
             display: flex;
             list-style: none;
-            width: 250px;
+            min-width: 350px;
             justify-content: space-between;
             li{
                 font-family: 'Urbanist';

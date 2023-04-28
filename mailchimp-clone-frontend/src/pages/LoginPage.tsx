@@ -3,6 +3,7 @@ import { API } from "../utils/API"
 import { useContext, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AuthContext from "../context/AuthProvider"
+import { Helmet } from "react-helmet"
 
 
 export const LoginPage = () => {
@@ -21,7 +22,7 @@ export const LoginPage = () => {
            });
            if(response.status === 201) {
                 const now = new Date();
-                const expireTime = now.getTime() + 30 * 60 * 1000;
+                const expireTime = now.getTime() + 15 * 60 * 1000;
                 const tokenData = {
                     token: response.data.jwtToken,
                     expireTime: expireTime
@@ -38,6 +39,10 @@ export const LoginPage = () => {
     
     return (
         <div className="login-page">
+            <Helmet>
+                <title>Login</title>
+            </Helmet>
+            <button className='go-back-btn' onClick={() => navigate(-1)}>Go Back</button>
             <h1 className="title">Sign In</h1>
             <div className="login-form">
                 <Stack sx={{width:"400px"}} spacing={5}>

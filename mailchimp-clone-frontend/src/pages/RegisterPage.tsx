@@ -5,6 +5,7 @@ import { API } from '../utils/API'
 import * as yup from 'yup'
 import {useForm} from 'react-hook-form'
 import {yupResolver} from '@hookform/resolvers/yup'
+import { Helmet } from 'react-helmet'
 
 
 // interface permissionName {
@@ -85,6 +86,10 @@ const RegisterPage = () => {
 
   return (
     <div className='register-page'>
+        <Helmet>
+            <title>Registration</title>
+        </Helmet>
+        <button className='go-back-btn' onClick={() => navigate(-1)}>Go Back</button>
         <h1 className="title">Register</h1>
 
         <form className="register-form" onSubmit={handleSubmit(registerUser)}>
