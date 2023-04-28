@@ -49,6 +49,7 @@ public class MailGroupsService implements MailGroupsServiceInterface{
     public ResponseEntity<String> createEmailList(MailListDto mailListDto) {
         var mailList = new BulkMailList();
         var mailRecipients = new ArrayList<MailRecipient>();
+        mailList.setListName(mailListDto.getListName());
 
         mailListDto.getMailRecipients().forEach(mailRecipientDto -> {
             var recipientMail = new MailRecipient();
@@ -122,4 +123,11 @@ public class MailGroupsService implements MailGroupsServiceInterface{
     public List<BulkMailGroup> mailGroupsList() {
         return groupRepo.findAll();
     }
+    
+    
+    public BulkMailGroup findGroupById(int id) {
+        return groupRepo.findById(id).orElseThrow();
+
+    }
+
 }

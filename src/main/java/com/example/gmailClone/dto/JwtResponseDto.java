@@ -1,2 +1,11 @@
-package com.example.gmailClone.dto;public class JwtResponseDto {
+package com.example.gmailClone.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class JwtResponseDto {
+    private String jwtToken;
+    private String refreshToken;
 }

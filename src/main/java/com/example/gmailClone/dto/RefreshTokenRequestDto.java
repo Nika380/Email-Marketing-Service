@@ -1,2 +1,8 @@
-package com.example.gmailClone.dto;public class RefreshTokenDto {
+package com.example.gmailClone.dto;
+
+import lombok.Data;
+
+@Data
+public class RefreshTokenRequestDto {
+    private String refreshToken;
 }

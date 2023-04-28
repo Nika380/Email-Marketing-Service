@@ -2,6 +2,7 @@ package com.example.gmailClone.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -14,6 +15,9 @@ public class BulkMailList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "list_name")
+    @NotNull
+    private String listName;
     @ManyToMany(mappedBy = "bulkMailLists")
     @JsonIgnore
     private List<BulkMailGroup> bulkMailGroups;

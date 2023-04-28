@@ -1,11 +1,13 @@
 package com.example.gmailClone.service.SendEmails;
 
+import com.example.gmailClone.dto.BombEmailDto;
 import com.example.gmailClone.dto.BulkEmail;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -45,20 +47,26 @@ public class SendEmailsServiceImpl implements EmailSendInterface{
     }
 
     @Override
-    public void bombOneMail(String mailTo) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<String> bombOneMail(BombEmailDto dto) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);
 
-        String emailFrom = "Sender";
-        String body = "Another";
+        String emailFrom = dto.getEmailSender();
+        String body = dto.getEmailBody();
         String subject = generateRandomString();
 
         messageHelper.setFrom(new InternetAddress(owner, emailFrom));
-        messageHelper.setTo(mailTo);
+        messageHelper.setTo(dto.getEmailTo());
         messageHelper.setSubject(subject);
         messageHelper.setText(body);
 
-        mailSender.send(message);
+        try{
+            mailSender.send(message);
+            return ResponseEntity.status(201).body("Email Bombed");
+        } catch (Exception e) {
+            throw new RuntimeException("No work");
+        }
+
     }
 
     public String generateRandomString() {

@@ -30,7 +30,8 @@ public class AuthenticationService {
 
          return AuthenticationResponse
                  .builder()
-                 .jwtToken(jwtToken)
+                 .jwtToken(jwtToken.getJwtToken())
+                 .refreshToken(jwtToken.getRefreshToken())
                  .build();
     }
 }

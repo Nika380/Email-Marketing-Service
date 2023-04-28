@@ -42,4 +42,10 @@ public class MailGroupController {
     public List<BulkMailGroup> getGroupsList() {
         return mailGroupsService.mailGroupsList();
     }
+
+    @GetMapping("/group/{id}")
+    public ResponseEntity<BulkMailGroup> findGroupById(@PathVariable int id) {
+        var group = mailGroupsService.findGroupById(id);
+        return ResponseEntity.status(200).body(group);
+    }
 }
