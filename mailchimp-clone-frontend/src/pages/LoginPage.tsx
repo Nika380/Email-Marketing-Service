@@ -22,12 +22,18 @@ export const LoginPage = () => {
            });
            if(response.status === 201) {
                 const now = new Date();
-                const expireTime = now.getTime() + 15 * 60 * 1000;
+                const expireTime = now.getTime() + 10 * 60 * 1000;
+                const refreshExpireTime = now.getTime() + 1000 * 60 * 60 * 24 * 7;
                 const tokenData = {
                     token: response.data.jwtToken,
                     expireTime: expireTime
                   };
+                const refreshTokenData = {
+                    refreshToken: response.data.refreshToken,
+                    expireTime: refreshExpireTime
+                }
                 localStorage.setItem('jwtToken', JSON.stringify(tokenData));
+                localStorage.setItem('refreshToken', JSON.stringify(refreshTokenData))
                 setAuth(true);
                 navigate('/dashboard')
            }

@@ -10,24 +10,88 @@ import Groups from '../pages/Groups';
 import EmailLists from '../pages/EmailLists';
 import GroupInfoPage from '../pages/GroupInfoPage';
 import EmailListInfoPage from '../pages/EmailListInfoPage';
+import { API } from '../utils/API';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
-  
-    useEffect(() => {
-        const checkAuth = JSON.parse(localStorage.getItem("jwtToken") || "null");
+
+    const jwtToken = () => {
+      const checkAuth = JSON.parse(localStorage.getItem("jwtToken") || "null");
         const now = new Date();
         if((location.pathname !== '/login') && (location.pathname !== '/reset-password') && location.pathname !== "/register") {
           if(checkAuth?.jwtToken !== "" && checkAuth?.expireTime > now) {
-            setAuth(true)
+            setAuth(true);
+            if(location.pathname === '/') {
+              navigate("/dashboard");
+            }
         } else {
             setAuth(false)
             localStorage.removeItem('jwtToken');
             navigate('/')
         }
         }
+    }
+
+    const refreshToken = async () => {
+      const checkRefreshToken = JSON.parse(localStorage.getItem("refreshToken") || "null");
+      if(checkRefreshToken === "null") {
+        return null;
+      }
+      const checkJwtToken = JSON.parse(localStorage.getItem("jwtToken") || "null");
+      if(checkJwtToken === null || checkJwtToken.expireTime < new Date()) {
+        await refresh({ token: checkRefreshToken.refreshToken });
+        refreshToken();
+        return null;
+      }
+      let now = new Date();
+      const tokenExpireTime = checkJwtToken?.expireTime;
+      let timeDiff = new Date(tokenExpireTime - 10000);
+
+      const intervalId = setInterval(async () => {
+        now = new Date(now.getTime() + 1000);
+
+        if (new Date() > timeDiff) {
+          clearInterval(intervalId);
+          console.log("token refreshed");
+          const response = await refresh({ token: checkRefreshToken.refreshToken });
+          
+          console.log(response)
+          refreshToken();
+        }
+      }, 1000);
+};
+
+    
+
+const refresh = async ({token}: any) => {
+  const response = await API.post("/auth/refresh", {
+    refreshToken: token
+  });
+  console.log(response)
+  if(response.status === 201) {
+    const now = new Date();
+    const expireTime = now.getTime() + 10 * 60 * 1000;
+    const tokenData = {
+        token: response.data.jwtToken,
+        expireTime: expireTime
+      };
+      localStorage.setItem('jwtToken', JSON.stringify(tokenData));
+      navigate('/dashboard')
+    } else {
+      console.log("Jwt Not Refreshed");
+    }
+  return response;
+};
+
+
+    useEffect(() => {
+      refreshToken();
+    }, [])
+  
+    useEffect(() => {
+        jwtToken();
       }, [auth, setAuth])
     
 

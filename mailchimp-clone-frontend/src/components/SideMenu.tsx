@@ -23,7 +23,8 @@ const SideMenu = ({page}: any) => {
     const navigate = useNavigate();
     const {auth, setAuth} = useContext(AuthContext);
     const logOut = () => {
-        localStorage.removeItem('jwtToken')
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem("refreshToken");
         setAuth(false);
         navigate('/')
       }

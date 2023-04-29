@@ -178,8 +178,8 @@ const GroupInfoPage = () => {
             {isLoading && 
             <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>}
             
-            {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} saveNewName={saveNewGroupName}/>}
         </div>
+            {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} saveNewName={saveNewGroupName}/>}
     
     
     
