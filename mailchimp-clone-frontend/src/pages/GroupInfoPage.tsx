@@ -61,7 +61,6 @@ const GroupInfoPage = () => {
     const [mailList, setMailList] = useState<mailList[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(true);
 
-
     
 
     const closeGroupChangeModal = (event: any) => {
@@ -109,7 +108,7 @@ const GroupInfoPage = () => {
 
     useEffect(() => {
         getGroupData();
-    }, [])
+    }, [id])
 
   return (
     <><Helmet>
@@ -142,11 +141,13 @@ const GroupInfoPage = () => {
 
                         <TableBody>
                             {mailList?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                let emailId = 0;
                                 return row.mailRecipients.map((recipient) => {
+                                    emailId++;
                                     console.log(recipient)
                                 return (
                                     <TableRow key={recipient?.id}>
-                                    <TableCell>{recipient?.id}</TableCell>
+                                    <TableCell>{emailId}</TableCell>
                                     <TableCell>{recipient?.emailAddress}</TableCell>
                                     <TableCell>
                                         <Stack direction="row" spacing={2}>

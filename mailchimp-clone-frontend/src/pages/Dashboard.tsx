@@ -52,7 +52,7 @@ const Dashboard = () => {
         </div>
 
       </div>
-      {showBulkModal && <BulkMailModal closeModal={closeBulkModal}/>}
+      {showBulkModal && <BulkMailModal closeModal={closeBulkModal} groupToSendMail=""/>}
       {showBombMailModal && <BombEmailModal closeBombModal={closeBombMailModal} />}
 
     </>
