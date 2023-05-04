@@ -1,5 +1,6 @@
 package com.example.gmailClone.service.MailGroups;
 
+import com.example.gmailClone.dto.MailGroups.GroupNameChangeDto;
 import com.example.gmailClone.dto.MailGroups.MailGroupDto;
 import com.example.gmailClone.dto.MailGroups.MailListDto;
 import com.example.gmailClone.entity.BulkMailGroup;
@@ -21,17 +22,17 @@ import org.webjars.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MailGroupsService implements MailGroupsServiceInterface{
+public class MailGroupsService{
     private final BulkMailGroupRepo groupRepo;
     private final BulkMailListRepo listRepo;
     private final MailRecipientRepo recipientRepo;
     private final UserRepo userRepo;
-    @Override
     @Transactional
     public ResponseEntity<String> addEmailAddress(String email) {
         if (recipientRepo.findMailRecipientByEmailAddress(email).isPresent()) {
@@ -44,12 +45,17 @@ public class MailGroupsService implements MailGroupsServiceInterface{
         return ResponseEntity.status(201).body(recipient.toString());
     }
 
-    @Override
     @Transactional
-    public ResponseEntity<String> createEmailList(MailListDto mailListDto) {
+    public ResponseEntity<String> createEmailList(MailListDto mailListDto, SecUser user) {
+
+        var check = findEmailListByName(mailListDto.getListName(), user);
+        if(!check.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("List With This Name Already Exists");
+        }
         var mailList = new BulkMailList();
         var mailRecipients = new ArrayList<MailRecipient>();
         mailList.setListName(mailListDto.getListName());
+        mailList.setListOwner(user.getUsername());
 
         mailListDto.getMailRecipients().forEach(mailRecipientDto -> {
             var recipientMail = new MailRecipient();
@@ -82,14 +88,30 @@ public class MailGroupsService implements MailGroupsServiceInterface{
         return ResponseEntity.status(201).body("Added");
     }
 
+    public ResponseEntity<?> findEmailListByName(String listName, SecUser user) {
+        var lists = listRepo.findBulkMailListByListOwner(user.getUsername());
+        for (BulkMailList list : lists) {
+            if (Objects.equals(list.getListName(), listName)) {
+                return ResponseEntity.status(202).body(list);
+            }
+        }
+        return ResponseEntity.status(400).body("List Does Not Exist");
+    }
 
-    @Override
+
+
     @Transactional
     public ResponseEntity<String> createGroup(MailGroupDto mailGroupDto, SecUser secUser) {
         var bulkGroup = new BulkMailGroup();
         var user = userRepo.findByEmail(secUser.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         List<BulkMailList> listIds = new ArrayList<>();
+        var checkGroup = groupRepo.findAllBulkMailGroupByGroupOwner(secUser.getUsername());
+        for(BulkMailGroup group : checkGroup) {
+            if(Objects.equals(group.getGroupName(), mailGroupDto.getGroupName())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Group With This Name Already Exists");
+            }
+        }
 
         bulkGroup.setGroupName(mailGroupDto.getGroupName());
         bulkGroup.setGroupOwner(secUser.getUsername());
@@ -98,8 +120,9 @@ public class MailGroupsService implements MailGroupsServiceInterface{
         mailGroupDto.getMailListIds().forEach(bulkMailList -> {
             var listItem = listRepo.findById(bulkMailList.getId())
                     .orElseThrow(() -> new NotFoundException("List Not Found"));
-
-            listIds.add(listItem);
+            if(listItem.getListOwner().equals(secUser.getUsername())) {
+                listIds.add(listItem);
+            }
 
         });
         bulkGroup.setBulkMailLists(listIds);
@@ -109,25 +132,63 @@ public class MailGroupsService implements MailGroupsServiceInterface{
     }
 
 
-    @Override
-    public List<BulkMailList> mailLists() {
-        return listRepo.findAll();
+    public List<BulkMailList> mailLists(SecUser user) {
+        return listRepo.findBulkMailListByListOwner(user.getUsername());
     }
 
-    @Override
     public List<MailRecipient> mailRecipientsList() {
         return recipientRepo.findAll();
     }
 
-    @Override
-    public List<BulkMailGroup> mailGroupsList() {
-        return groupRepo.findAll();
+    public List<BulkMailGroup> mailGroupsList(SecUser user) {
+        return groupRepo.findAllBulkMailGroupByGroupOwner(user.getUsername());
     }
     
     
-    public BulkMailGroup findGroupById(int id) {
-        return groupRepo.findById(id).orElseThrow();
+    public ResponseEntity<?> findGroupById(int id, SecUser user) {
+        var group = groupRepo.findById(id).orElseThrow();
+        if(!group.getGroupOwner().equals(user.getUsername())) {
+            return ResponseEntity.status(400).body("Group Does Not Belongs To User");
+        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(group);
 
+    }
+
+    public ResponseEntity<String> changeGroupName(GroupNameChangeDto dto, int id, SecUser user) {
+        var group = groupRepo.findById(id).orElseThrow(() -> new NotFoundException("Group Does Not Exists"));
+        if(!group.getGroupOwner().equals(user.getUsername())) {
+            return ResponseEntity.status(400).body("Group Does Not Belongs To User");
+        }
+        try {
+            group.setGroupName(dto.getNewGroupName());
+            groupRepo.save(group);
+            return ResponseEntity.status(201).body("Name Changed Successfully");
+        }  catch (Exception e) {
+            return ResponseEntity.status(400).body("Something Wrong Happened");
+        }
+    }
+
+    public ResponseEntity<?> deleteGroup(int groupId, SecUser user) {
+        var groupToDelete = groupRepo.findById(groupId).orElseThrow();
+        if(!groupToDelete.getGroupOwner().equals(user.getUsername())) {
+            return ResponseEntity.status(400).body("Group Does Not Belong To This Account");
+        }
+
+        // Remove the association between the group and its mail lists
+        try {
+            groupToDelete.getBulkMailLists().forEach(list -> {
+                list.getBulkMailGroups().remove(groupToDelete);
+                groupToDelete.getBulkMailLists().remove(list);
+                listRepo.save(list);
+                groupRepo.save(groupToDelete);
+            });
+
+            // Delete the group
+            groupRepo.delete(groupToDelete);
+            return ResponseEntity.status(201).body("Group Deleted Successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Error Occurred");
+        }
     }
 
 }

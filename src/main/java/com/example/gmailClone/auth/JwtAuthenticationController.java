@@ -27,8 +27,6 @@ public class JwtAuthenticationController {
         String refreshToken = request.getRefreshToken();
         String newAccessToken = jwtService.refreshToken(refreshToken).getJwtToken();
 
-
-
-        return ResponseEntity.ok(new JwtResponseDto(newAccessToken, refreshToken));
+        return ResponseEntity.status(201).body(new JwtResponseDto(newAccessToken, refreshToken));
     }
 }

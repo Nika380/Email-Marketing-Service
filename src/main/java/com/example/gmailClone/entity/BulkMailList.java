@@ -18,11 +18,13 @@ public class BulkMailList {
     @Column(name = "list_name")
     @NotNull
     private String listName;
-    @ManyToMany(mappedBy = "bulkMailLists")
+    @Column(name = "list_owner")
+    private String listOwner;
+    @ManyToMany(mappedBy = "bulkMailLists", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<BulkMailGroup> bulkMailGroups;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "recipient_addresses_in_mail_list",
             joinColumns = @JoinColumn(name = "list_id"),

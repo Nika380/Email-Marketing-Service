@@ -2,6 +2,9 @@ package com.example.gmailClone.service.SendEmails;
 
 import com.example.gmailClone.dto.BombEmailDto;
 import com.example.gmailClone.dto.BulkEmail;
+import com.example.gmailClone.entity.BulkMailGroup;
+import com.example.gmailClone.repository.MailGroups.BulkMailGroupRepo;
+import com.example.gmailClone.security.SecUser;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -17,36 +20,68 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class SendEmailsServiceImpl implements EmailSendInterface{
+public class SendEmailsServiceImpl {
 
-    private final JavaMailSender mailSender;
+    private final  JavaMailSender mailSender;
+    private final BulkMailGroupRepo groupRepo;
 
     @Value("${spring.mail.username}")
     private String owner;
 
-    @Override
-    public void sendBulkEmail(BulkEmail bulkEmail) throws MessagingException, UnsupportedEncodingException {
-        MimeMessage mimeMessage;
+//    @Override
+    public ResponseEntity<String> sendBulkEmail(String groupName, BulkEmail bulkEmail, SecUser user) throws MessagingException,UnsupportedEncodingException {
 
-        mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+        var groupsList = groupRepo.findAllBulkMailGroupByGroupOwner(user.getUsername());
 
-        helper.setFrom(new InternetAddress(owner, bulkEmail.getMailSender()));
-        helper.setText(bulkEmail.getMailBody());
-        helper.setSubject(bulkEmail.getMailSubject());
+        for(BulkMailGroup group : groupsList) {
+            if(group.getGroupName().equals(groupName)) {
 
-        bulkEmail.getMails().forEach(mail -> {
-            try {
-                helper.setTo(mail.getMailTo());
-                mailSender.send(mimeMessage);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                MimeMessage mimeMessage;
+                mimeMessage = mailSender.createMimeMessage();
+                try {
+                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+                    helper.setFrom(new InternetAddress(owner, bulkEmail.getMailSender()));
+                    helper.setFrom(new InternetAddress(owner, bulkEmail.getMailSender()));
+                    helper.setText(bulkEmail.getMailBody());
+                    helper.setSubject(bulkEmail.getMailSubject());
+                    group.getBulkMailLists().forEach(list -> list.getMailRecipients().forEach(mailRecipient -> {
+                        try {
+                            helper.setTo(mailRecipient.getEmailAddress());
+                            mailSender.send(mimeMessage);
+                        } catch (MessagingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }));
+                } catch (MessagingException | UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+
+                break;
             }
-        });
+        }
+
+//        MimeMessage mimeMessage;
+//
+//        mimeMessage = mailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+//        helper.setFrom(new InternetAddress(owner, bulkEmail.getMailSender()));
+//        helper.setText(bulkEmail.getMailBody());
+//        helper.setSubject(bulkEmail.getMailSubject());
+//        var group = groupRepo.findById(groupId).orElseThrow(() -> new NotFoundException("Group Does Not Exists"));
+//        group.getBulkMailLists().forEach(list -> list.getMailRecipients().forEach(mailRecipient -> {
+//            try {
+//                helper.setTo(mailRecipient.getEmailAddress());
+//                mailSender.send(mimeMessage);
+//            } catch (MessagingException e) {
+//                throw new RuntimeException(e);
+//            };
+//        }));
+        return ResponseEntity.status(201).body("Sent Successfully");
+
 
     }
 
-    @Override
+
     public ResponseEntity<String> bombOneMail(BombEmailDto dto) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);

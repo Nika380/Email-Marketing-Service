@@ -2,11 +2,13 @@ package com.example.gmailClone.controller;
 
 import com.example.gmailClone.dto.BombEmailDto;
 import com.example.gmailClone.dto.BulkEmail;
+import com.example.gmailClone.security.SecUser;
 import com.example.gmailClone.service.SendEmails.SendEmailsServiceImpl;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -18,10 +20,10 @@ public class MailSenderController {
 
     private final SendEmailsServiceImpl emailsService;
 
-    @PostMapping("/send-bulk")
-    @PreAuthorize("hasAuthority('USER')")
-    public void sendBulkMail(@RequestBody BulkEmail bulkEmail) throws MessagingException, UnsupportedEncodingException {
-        emailsService.sendBulkEmail(bulkEmail);
+    @PostMapping("/send-bulk/{groupName}")
+//    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> sendBulkMail(@PathVariable String groupName, @RequestBody BulkEmail bulkEmail, @AuthenticationPrincipal SecUser user) throws MessagingException, UnsupportedEncodingException {
+        return emailsService.sendBulkEmail(groupName, bulkEmail, user);
     }
 
     @PostMapping("/bomb-email/{number}")
@@ -31,4 +33,5 @@ public class MailSenderController {
         }
         return ResponseEntity.status(201).body("Bombed");
     }
+
 }

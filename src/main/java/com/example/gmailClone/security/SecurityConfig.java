@@ -35,7 +35,7 @@ public class SecurityConfig {
                 configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("*"));
-                    config.setAllowedMethods(Arrays.asList("GET", "POST"));
+                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
                     config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
                     return config;
                 })
@@ -46,6 +46,8 @@ public class SecurityConfig {
                 .requestMatchers("/email/activate/**").permitAll()
                 .requestMatchers("/activate/**").permitAll()
                 .requestMatchers("/auth/authenticate").permitAll()
+                .requestMatchers("/auth/refresh").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()

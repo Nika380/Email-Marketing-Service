@@ -1,5 +1,6 @@
 package com.example.gmailClone.controller;
 
+import com.example.gmailClone.dto.MailGroups.GroupNameChangeDto;
 import com.example.gmailClone.dto.MailGroups.MailGroupDto;
 import com.example.gmailClone.dto.MailGroups.MailListDto;
 import com.example.gmailClone.entity.BulkMailGroup;
@@ -25,8 +26,8 @@ public class MailGroupController {
     }
 
     @PostMapping("/create-list")
-    public ResponseEntity<String> createEmailList(@RequestBody MailListDto dto) {
-        return mailGroupsService.createEmailList(dto);
+    public ResponseEntity<String> createEmailList(@RequestBody MailListDto dto, @AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.createEmailList(dto, user);
     }
 
     @PostMapping("/create-group")
@@ -35,17 +36,31 @@ public class MailGroupController {
     }
 
     @GetMapping("/list")
-    public List<BulkMailList> getMailLists() {
-        return mailGroupsService.mailLists();
+    public List<BulkMailList> getMailLists(@AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.mailLists(user);
     }
     @GetMapping("/groups-list")
-    public List<BulkMailGroup> getGroupsList() {
-        return mailGroupsService.mailGroupsList();
+    public List<BulkMailGroup> getGroupsList(@AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.mailGroupsList(user);
+    }
+    @GetMapping("/find-list/{listName}")
+    public ResponseEntity<?> findListByListName(@PathVariable String listName,@AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.findEmailListByName(listName, user);
     }
 
-    @GetMapping("/group/{id}")
-    public ResponseEntity<BulkMailGroup> findGroupById(@PathVariable int id) {
-        var group = mailGroupsService.findGroupById(id);
-        return ResponseEntity.status(200).body(group);
+    @GetMapping("/group/{groupId}")
+    public ResponseEntity<?> findGroupById(@PathVariable int groupId, @AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.findGroupById(groupId, user);
+    }
+
+    @PostMapping("/change-name/{groupId}")
+    public ResponseEntity<?> changeGroupName(@RequestBody GroupNameChangeDto dto, @PathVariable int groupId, @AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.changeGroupName(dto, groupId, user);
+    }
+
+    @DeleteMapping("/delete-group/{groupId}")
+    public ResponseEntity<?> deleteGroup(@PathVariable int groupId, @AuthenticationPrincipal SecUser user) {
+        mailGroupsService.deleteGroup(groupId, user);
+        return mailGroupsService.deleteGroup(groupId, user);
     }
 }
