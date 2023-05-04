@@ -1,7 +1,7 @@
 import { Button, Stack, TextField } from '@mui/material'
 import { useState } from 'react'
 
-const ChangeGroupNameModal = ({onModalClose, groupName, saveNewName}: any) => {
+const ChangeGroupNameModal = ({onModalClose, groupName, saveNewName, setGroupName}: any) => {
 
     const [newGroupName, setNewGroupName] = useState<string>(groupName)
 

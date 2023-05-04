@@ -11,9 +11,11 @@ import EmailLists from '../pages/EmailLists';
 import GroupInfoPage from '../pages/GroupInfoPage';
 import EmailListInfoPage from '../pages/EmailListInfoPage';
 import { API } from '../utils/API';
+import ChangeGroupNameContext, { ChangeGroupNameContextProvider } from '../context/NameChangeContext';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
+    const {groupName, setGroupName}: any = useContext(ChangeGroupNameContext);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -55,9 +57,8 @@ const RouteComp = () => {
         if (new Date() > timeDiff) {
           clearInterval(intervalId);
           console.log("token refreshed");
-          const response = await refresh({ token: checkRefreshToken.refreshToken });
+          await refresh({ token: checkRefreshToken.refreshToken });
           
-          console.log(response)
           refreshToken();
         }
       }, 1000);
@@ -69,7 +70,6 @@ const refresh = async ({token}: any) => {
   const response = await API.post("/auth/refresh", {
     refreshToken: token
   });
-  console.log(response)
   if(response.status === 201) {
     const now = new Date();
     const expireTime = now.getTime() + 10 * 60 * 1000;
@@ -78,7 +78,9 @@ const refresh = async ({token}: any) => {
         expireTime: expireTime
       };
       localStorage.setItem('jwtToken', JSON.stringify(tokenData));
-      navigate('/dashboard')
+      if(location.pathname === "/") {
+        navigate('/dashboard')
+      }
     } else {
       console.log("Jwt Not Refreshed");
     }
@@ -103,7 +105,7 @@ const refresh = async ({token}: any) => {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/reset-password' element={<PasswordReset />} />
           <Route path='/groups' element={<Groups />}/>
-          <Route path='/groups/:id/:name' element={<GroupInfoPage />}/>
+          <Route path='/groups/:id/:name' element={<ChangeGroupNameContextProvider><GroupInfoPage /></ChangeGroupNameContextProvider>} />
           <Route path='/email-lists' element={<EmailLists />} />
           <Route path='/email-lists/:name' element={<EmailListInfoPage />} />
     </Routes>
