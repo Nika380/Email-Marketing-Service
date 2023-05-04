@@ -4,41 +4,11 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { Stack, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { SetStateAction, useEffect, useState } from 'react';
+import { SetStateAction, useContext, useEffect, useState } from 'react';
 import ChangeGroupNameModal from '../modals/ChangeGroupNameModal';
 import { API } from '../utils/API';
 import LoadingCube from '../loading-animation/LoadingCube';
-
-const rows = [
-    {
-        id: 1,
-        email: "test@gmail.com"
-    },
-    {
-        id: 2,
-        email: "test2@gmail.com"
-    },
-    {
-        id: 3,
-        email: "test3@gmail.com"
-    },
-    {
-        id: 4,
-        email: "test4@gmail.com"
-    },
-    {
-        id: 5,
-        email: "test5@gmail.com"
-    },
-    {
-        id: 1,
-        email: "test@gmail.com"
-    },
-    {
-        id: 2,
-        email: "test2@gmail.com"
-    }
-]
+import ChangeGroupNameContext from '../context/NameChangeContext';
 
 interface mailList{
     id: number,
@@ -55,11 +25,12 @@ const GroupInfoPage = () => {
     const { id, name } = useParams<{ id: string, name: string }>();
     const groupId = parseInt(id || "");
     const [showGroupChangeModal, setShowGroupChangeModal] = useState<boolean>(false);
-    const [groupName, setGroupName] = useState<string>(name || "");
+    // const [groupName1, setGroupName1] = useState<string>(name || "");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [mailList, setMailList] = useState<mailList[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(true);
+    const {groupName, setGroupName}: any = useContext(ChangeGroupNameContext);
 
 
     
@@ -74,8 +45,24 @@ const GroupInfoPage = () => {
         setShowGroupChangeModal(true);
     }
 
-    const saveNewGroupName = (newName: SetStateAction<string>) => {
-        setGroupName(newName);
+    const saveNewGroupName = async (newName: string) => {
+        const jwt = localStorage.getItem("jwtToken");
+        const tok = JSON.parse(jwt || "");
+        try {
+            const response = await API.post(`/groups/change-name/${id}`, 
+            {
+                newGroupName: newName
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${tok?.token}`
+                }
+            }
+            );
+            setGroupName(newName);
+        } catch (error) {
+            console.log(error)
+        }
         setShowGroupChangeModal(false);
     }
   
@@ -109,6 +96,10 @@ const GroupInfoPage = () => {
 
     useEffect(() => {
         getGroupData();
+    }, [id])
+
+    useEffect(() => {
+        setGroupName(name);
     }, [])
 
   return (
@@ -116,10 +107,10 @@ const GroupInfoPage = () => {
         <title>Group Info</title>
       </Helmet>
 
-            <button className='go-back-btn' onClick={() => navigate(-1)}>Go Back</button>
             <SideMenu page={"groups"} />
 
         <div className='group-info'>
+            <button className='go-back-btn' onClick={() => navigate(-1)}>Go Back</button>
 
             <div className="header">
                 <h1>{groupName}
@@ -142,11 +133,12 @@ const GroupInfoPage = () => {
 
                         <TableBody>
                             {mailList?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                let emailId = 0;
                                 return row.mailRecipients.map((recipient) => {
-                                    console.log(recipient)
+                                    emailId++;
                                 return (
                                     <TableRow key={recipient?.id}>
-                                    <TableCell>{recipient?.id}</TableCell>
+                                    <TableCell>{emailId}</TableCell>
                                     <TableCell>{recipient?.emailAddress}</TableCell>
                                     <TableCell>
                                         <Stack direction="row" spacing={2}>
@@ -178,8 +170,8 @@ const GroupInfoPage = () => {
             {isLoading && 
             <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>}
             
-            {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} saveNewName={saveNewGroupName}/>}
         </div>
+            {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} setGroupName={setGroupName} saveNewName={saveNewGroupName}/>}
     
     
     

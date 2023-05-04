@@ -45,15 +45,16 @@ const Dashboard = () => {
             <h1 className="title">Send Bulk Emails</h1>
             <img src={bulkMail} alt="" />
           </div>
-          {showBulkModal && <BulkMailModal closeModal={closeBulkModal}/>}
           <div className="bomb-mail" onClick={openBombMailModal}>
             <h1 className="title">Bomb Email</h1>
             <img src={bombMail} alt="" />
           </div>
-          {showBombMailModal && <BombEmailModal closeBombModal={closeBombMailModal} />}
         </div>
 
       </div>
+      {showBulkModal && <BulkMailModal closeModal={closeBulkModal} groupToSendMail=""/>}
+      {showBombMailModal && <BombEmailModal closeBombModal={closeBombMailModal} />}
+
     </>
   );
 };
