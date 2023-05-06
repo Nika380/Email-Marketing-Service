@@ -107,7 +107,7 @@ const refresh = async ({token}: any) => {
           <Route path='/groups' element={<Groups />}/>
           <Route path='/groups/:id/:name' element={<ChangeGroupNameContextProvider><GroupInfoPage /></ChangeGroupNameContextProvider>} />
           <Route path='/email-lists' element={<EmailLists />} />
-          <Route path='/email-lists/:name' element={<EmailListInfoPage />} />
+          <Route path='/email-lists/:id/:name' element={<EmailListInfoPage />} />
     </Routes>
   )
 }

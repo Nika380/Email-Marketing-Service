@@ -26,11 +26,15 @@ const GroupInfoPage = () => {
     const groupId = parseInt(id || "");
     const [showGroupChangeModal, setShowGroupChangeModal] = useState<boolean>(false);
     // const [groupName1, setGroupName1] = useState<string>(name || "");
-    const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [mailList, setMailList] = useState<mailList[]>([]);
+    const [mailList, setMailList] = useState<mailRecipients[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(true);
     const {groupName, setGroupName}: any = useContext(ChangeGroupNameContext);
+    const [totalElements, setTotalElements] = useState<number>(0);
+    const [pageSize, setpageSize] = useState<number>(5);
+    const [pageNumber, setPageNumber] = useState<number>(0);
+    let emailId = 0;
+
 
 
     
@@ -66,28 +70,32 @@ const GroupInfoPage = () => {
         setShowGroupChangeModal(false);
     }
   
-    const handleChangePage = (event: any, newPage: SetStateAction<number>) => {
-      setPage(newPage);
+    const handleChangePage = async (event: any, newPage: SetStateAction<number>) => {
+        await getGroupData({pageNumber: newPage, pageSize: rowsPerPage});
+        setPageNumber(newPage);
     };
   
-    const handleChangeRowsPerPage = (event: { target: { value: string; }; }) => {
+    const handleChangeRowsPerPage = async (event: { target: { value: string; }; }) => {
+        await getGroupData({pageSize: parseInt(event.target.value, 10), pageNumber: 0});
       setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
+      setPageNumber(0);
     };
 
-    const getGroupData = async () => {
+    const getGroupData = async ({pageSize, pageNumber}: any) => {
         const jwt = localStorage.getItem("jwtToken");
         const tok = JSON.parse(jwt || "");
         try {
           const response = await API.get(
-            `/groups/group/${id}`,
+            `/groups/mails-list/paging?groupId=${id}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
             {
               headers: {
                 Authorization: `Bearer ${tok?.token}`
               }
             }
           );
-          setMailList(response.data.bulkMailLists)
+          console.log(response.data)
+          setTotalElements(response.data.totalElements)
+          setMailList(response.data.content)
           setIsLoading(false);
         } catch (error) {
             console.log(error)
@@ -95,7 +103,7 @@ const GroupInfoPage = () => {
     }
 
     useEffect(() => {
-        getGroupData();
+        getGroupData({pageNumber: 0, pageSize: 5});
     }, [id])
 
     useEffect(() => {
@@ -127,20 +135,18 @@ const GroupInfoPage = () => {
                         <TableRow>
                             <TableCell>id</TableCell>
                             <TableCell>Email</TableCell>
-                            <TableCell>Actions</TableCell>
+                            {/* <TableCell>Actions</TableCell> */}
                         </TableRow>
                     </TableHead>
 
                         <TableBody>
-                            {mailList?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                let emailId = 0;
-                                return row.mailRecipients.map((recipient) => {
+                            {mailList.map((row) => {
                                     emailId++;
                                 return (
-                                    <TableRow key={recipient?.id}>
+                                    <TableRow key={row.id}>
                                     <TableCell>{emailId}</TableCell>
-                                    <TableCell>{recipient?.emailAddress}</TableCell>
-                                    <TableCell>
+                                    <TableCell>{row.emailAddress}</TableCell>
+                                    {/* <TableCell>
                                         <Stack direction="row" spacing={2}>
                                         <button className="action-btn">
                                             <EditIcon color="info" />
@@ -149,10 +155,9 @@ const GroupInfoPage = () => {
                                             <DeleteIcon color="error" />
                                         </button>
                                         </Stack>
-                                    </TableCell>
+                                    </TableCell> */}
                                     </TableRow>
                                 );
-                                });
                             })}
                         </TableBody>
 
@@ -160,9 +165,9 @@ const GroupInfoPage = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={7}
+                    count={totalElements}
                     rowsPerPage={rowsPerPage}
-                    page={page}
+                    page={pageNumber}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     />
