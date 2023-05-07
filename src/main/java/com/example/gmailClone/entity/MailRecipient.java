@@ -17,7 +17,7 @@ public class MailRecipient {
     @Column(name = "email_address")
     private String emailAddress;
 
-    @ManyToMany(mappedBy = "mailRecipients")
+    @ManyToMany(mappedBy = "mailRecipients", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<BulkMailList> bulkMailLists;
 }

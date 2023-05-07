@@ -20,7 +20,7 @@ public class BulkMailList {
     private String listName;
     @Column(name = "list_owner")
     private String listOwner;
-    @ManyToMany(mappedBy = "bulkMailLists", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "bulkMailLists", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<BulkMailGroup> bulkMailGroups;
 
