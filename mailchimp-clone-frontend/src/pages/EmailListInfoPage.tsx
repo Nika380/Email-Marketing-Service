@@ -1,68 +1,110 @@
-import React, { SetStateAction, useEffect, useState } from 'react'
+import React, { SetStateAction, useContext, useEffect, useState } from 'react'
 import SideMenu from '../components/SideMenu'
 import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router-dom'
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Table, TableHead, TableRow, TableBody, TableCell, Button, TablePagination } from '@mui/material';
+import { Table, TableHead, TableRow, TableBody, TableCell, Button, TablePagination, Stack, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { API } from '../utils/API';
+import LoadingCube from '../loading-animation/LoadingCube';
+import { DataGrid, GridPaginationModel, GridToolbarExport } from '@mui/x-data-grid';
+import ChangeListNameModal from '../modals/ChangeListNameModal';
+import ListNameChangeContext from '../context/ListNameChangeContext';
 
 interface mailRecipient {
   id: number,
+  idToDisplay: number,
   emailAddress: string
 }
+
+const CustomToolBar = () => {
+  return (
+    <Stack direction="row" justifyContent="end">
+          <Tooltip title="Export Table Data">
+          <GridToolbarExport
+           csvOptions={{ fileName: 'Email-Address-List' }}
+           />
+      </Tooltip>
+      </Stack>
+  )
+}
+
 
 const EmailListInfoPage = () => {
 
 
   const {id, name} = useParams();
+  const {listName, setListName}: any = useContext(ListNameChangeContext);
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalElementsCount, setTotalElementsCount] = useState<number>(0);
   const [recipientList, setRecipientList] = useState<mailRecipient[]>([]);
-  const emptyRow: mailRecipient = { id: 0, emailAddress: "                  " };
+  const [infoLoading, setInfoLoading] = useState<boolean>(false);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
+  const [showListNameChangeModal, setShowListNameChangeModal] = useState<boolean>(false);
 
-  const handleChangePage = (event: any, newPage: SetStateAction<number>) => {
-    setPage(newPage);
-  };
+  const columns = [
+    {
+      field: "idToDisplay",
+      headerName: "ID",
+      sortable: false, filterable: false
+    },
+    {
+      field: "emailAddress",
+      headerName: "Email Address",
+      width: 300,
+      sortable: false
+    }
+  ]
 
-  const handleChangeRowsPerPage = (event: { target: { value: string; }; }) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  const openListNameChangeModal = () => {
+    setShowListNameChangeModal(true);
+  }
+
+  const closeListNameChangeModal = (event: any) => {
+    if(event.target.classList.contains("close")) {
+      setShowListNameChangeModal(false);
+    }
+  }
+
+  const handlePaginationModelChange = async (newPaginationModel: GridPaginationModel) => {
+    setRowsPerPage(newPaginationModel.pageSize);
+    setPage(newPaginationModel.page)
+    setPaginationModel(newPaginationModel);
+  }
 
 
-  const getListsInfo = async () => {
+
+  const getListsInfo = async ({pageNumber, pageSize}: any) => {
     const jwt = localStorage.getItem("jwtToken");
     const tok = JSON.parse(jwt || "");
+    setInfoLoading(true);
     try {
       const response = await API.get(
-        `/groups/mail-list/recipients-list?listId=${id}&pageNumber=${page}&pageSize=${rowsPerPage}`,
+        `/groups/mail-list/recipients-list?listId=${id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
         {
           headers: {
             Authorization: `Bearer ${tok?.token}`
           }
         }
       );
-      console.log(response);
+      let emailId = 0;
       const recipients = response.data.content.map((recipient: any) => {
+        emailId++;
         return {
           id: recipient.id,
+          idToDisplay: emailId,
           emailAddress: recipient.emailAddress,
         }
       });
-      if(recipients.length < rowsPerPage) {
-        const count = rowsPerPage - recipients.length;
-        const emptyRows = [];
-        for(let i = 0; i < count; i++) {
-          emptyRows.push(emptyRow);
-        }
-
-        recipients.push(...emptyRows);
-      }
+      
       setRecipientList(recipients);
+      setInfoLoading(false);
       setTotalElementsCount(response.data.totalElements);
     } catch(error) {
       console.log(error);
@@ -70,8 +112,13 @@ const EmailListInfoPage = () => {
   }
 
   useEffect(() => {
-    getListsInfo()
+    getListsInfo({pageNumber: page, pageSize: rowsPerPage})
   }, [page, setPage, rowsPerPage, setRowsPerPage])
+
+  useEffect(() => {
+    setListName(name);
+  }, [])
+  
 
   return (
         <>
@@ -86,54 +133,43 @@ const EmailListInfoPage = () => {
           <div className="content">
 
               <div className="header">
-                  <h1 className="title">{name}
-                  <button><EditIcon color='info'/></button></h1>
+                  <h1 className="title">{listName}
+                  <Tooltip title="Change List Name">
+                    <button onClick={openListNameChangeModal}><EditIcon color='info'/></button>
+                  </Tooltip>
+                  
+                  </h1>
                   
               </div>
 
               <div className="table-section">
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align='left'>id</TableCell>
-                      <TableCell align='left'>Email Address</TableCell>
-                      <TableCell align='left'>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {recipientList.map(row => {
-                     if(row.id !== 0) {
-                      return <TableRow>
-                        <TableCell align='left'>{row.id}</TableCell>
-                        <TableCell align='left'>{row.emailAddress}</TableCell>
-                        <TableCell align='left'> <button className='action-btn'><DeleteIcon /></button></TableCell>
-                      </TableRow>
-                     } else {
-                      return <TableRow>
-                        <TableCell align='left'></TableCell>
-                        <TableCell align='left'></TableCell>
-                        <TableCell align='left'><button className='action-btn'></button></TableCell>
-                      </TableRow>
-                     }
-                    })}
-                  </TableBody>
-                </Table>
-
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={totalElementsCount}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                <DataGrid
+                columns={columns}
+                rows={recipientList}
+                pagination
+                paginationMode='server'
+                paginationModel={paginationModel}
+                onPaginationModelChange={handlePaginationModelChange}
+                rowCount={totalElementsCount}
+                pageSizeOptions={[10, 25, 50, 100]}
+                initialState={{
+                  pagination: {paginationModel: 
+                  {pageSize: rowsPerPage, page: page}}
+                }}
+                slots={{
+                  toolbar: CustomToolBar
+                }}
+                />
               </div>
           </div>
 
 
-      </div></>
+      </div>
+      {infoLoading &&
+      <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>
+    }
+    {showListNameChangeModal && <ChangeListNameModal id={id} onModalClose={closeListNameChangeModal} listName={listName} setListName={setListName} setShowListNameChangeModal={setShowListNameChangeModal}/>}
+      </>
   )
 }
 

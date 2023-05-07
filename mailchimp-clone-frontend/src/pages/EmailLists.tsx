@@ -5,6 +5,8 @@ import { API } from '../utils/API'
 import Button from '@mui/material/Button/Button'
 import CreateNewListModal from '../modals/CreateNewListModal'
 import { CircularProgress } from '@mui/material'
+import { Helmet } from 'react-helmet'
+import LoadingCube from '../loading-animation/LoadingCube'
 
 
 interface listComponent {
@@ -19,6 +21,7 @@ const EmailLists = () => {
   const [showCreateListModal, setShowCreateListModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingText, setLoadingText] = useState<string>("sadsadsad");
+  const [infoLoading, setInfoLoading] = useState<boolean>(false);
 
   const closeCreateListModal = (event: any) => {
     if(event.target.classList.contains("close")) {
@@ -52,6 +55,7 @@ const EmailLists = () => {
   const getListsInfo = async () => {
     const jwt = localStorage.getItem("jwtToken");
     const tok = JSON.parse(jwt || "");
+    setInfoLoading(true);
     try {
       const response = await API.get(
         `/groups/list`,
@@ -69,6 +73,7 @@ const EmailLists = () => {
         }
       });
       setEmailListsComponentList(lists);
+      setInfoLoading(false);
     } catch(error) {
       console.log(error);
     }
@@ -79,6 +84,9 @@ const EmailLists = () => {
   }, [])
   return (
     <>
+    <Helmet>
+      <title>Email List</title>
+    </Helmet>
     <div className='email-list'>
         <SideMenu page={"email-lists"}/>
         
@@ -103,6 +111,10 @@ const EmailLists = () => {
         <CircularProgress color='secondary' />
         <h1>{loadingText}</h1>
       </div>
+    }
+
+    {infoLoading &&
+      <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>
     }
     </>
   )

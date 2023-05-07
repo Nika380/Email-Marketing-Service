@@ -9,6 +9,7 @@ import ChangeGroupNameModal from '../modals/ChangeGroupNameModal';
 import { API } from '../utils/API';
 import LoadingCube from '../loading-animation/LoadingCube';
 import ChangeGroupNameContext from '../context/NameChangeContext';
+import { DataGrid, GridPaginationModel, GridValueGetterParams, GridToolbarExport  } from '@mui/x-data-grid';
 
 interface mailList{
     id: number,
@@ -17,24 +18,50 @@ interface mailList{
 
 interface mailRecipients {
     id: number,
+    displayId: number,
     emailAddress: string
+}
+
+const CustomToolBar = () => {
+    return (
+        <Stack direction="row" justifyContent="end">
+            <Tooltip title="Export Table Data">
+                <GridToolbarExport
+                csvOptions={{ fileName: 'email-list-in-group' }}
+                />
+             </Tooltip>
+        </Stack>
+    )
 }
 
 const GroupInfoPage = () => {
     const navigate = useNavigate();
     const { id, name } = useParams<{ id: string, name: string }>();
-    const groupId = parseInt(id || "");
     const [showGroupChangeModal, setShowGroupChangeModal] = useState<boolean>(false);
-    // const [groupName1, setGroupName1] = useState<string>(name || "");
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [mailList, setMailList] = useState<mailRecipients[]>([]);
     const [isLoading,setIsLoading] = useState<boolean>(true);
     const {groupName, setGroupName}: any = useContext(ChangeGroupNameContext);
     const [totalElements, setTotalElements] = useState<number>(0);
-    const [pageSize, setpageSize] = useState<number>(5);
     const [pageNumber, setPageNumber] = useState<number>(0);
+    const [paginationModel, setPaginationModel] = useState({
+        pageSize: 10,
+        page: 0,
+      });
     let emailId = 0;
-
+    const columns = [
+        {
+            field: "displayId",
+            headerName: "ID",
+            sortable: false, filterable: false
+        },
+        {
+            field: "emailAddress",
+            headerName: "Email Address",
+            width: 300,
+            sortable: false
+        }
+    ]
 
 
     
@@ -49,37 +76,17 @@ const GroupInfoPage = () => {
         setShowGroupChangeModal(true);
     }
 
-    const saveNewGroupName = async (newName: string) => {
-        const jwt = localStorage.getItem("jwtToken");
-        const tok = JSON.parse(jwt || "");
-        try {
-            const response = await API.post(`/groups/change-name/${id}`, 
-            {
-                newGroupName: newName
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${tok?.token}`
-                }
-            }
-            );
-            setGroupName(newName);
-        } catch (error) {
-            console.log(error)
-        }
-        setShowGroupChangeModal(false);
-    }
-  
-    const handleChangePage = async (event: any, newPage: SetStateAction<number>) => {
-        await getGroupData({pageNumber: newPage, pageSize: rowsPerPage});
-        setPageNumber(newPage);
-    };
-  
-    const handleChangeRowsPerPage = async (event: { target: { value: string; }; }) => {
-        await getGroupData({pageSize: parseInt(event.target.value, 10), pageNumber: 0});
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPageNumber(0);
-    };
+    
+    const handleChangeRowsPerPage = async (newPaginationModel: GridPaginationModel) => {
+        await getGroupData({
+          pageSize: newPaginationModel.pageSize,
+          pageNumber: newPaginationModel.page,
+        });
+        setPageNumber(newPaginationModel.page);
+        setRowsPerPage(newPaginationModel.pageSize);
+        setPaginationModel(newPaginationModel);
+      };
+      
 
     const getGroupData = async ({pageSize, pageNumber}: any) => {
         const jwt = localStorage.getItem("jwtToken");
@@ -93,9 +100,17 @@ const GroupInfoPage = () => {
               }
             }
           );
-          console.log(response.data)
+          emailId = 0;
+          const updatedMailList = response.data.content.map((email: { id: number, emailAddress: string }) => {
+            emailId++;
+            return {
+                id: email.id,
+                displayId: emailId,
+                emailAddress: email.emailAddress
+            }
+          })
           setTotalElements(response.data.totalElements)
-          setMailList(response.data.content)
+          setMailList(updatedMailList)
           setIsLoading(false);
         } catch (error) {
             console.log(error)
@@ -103,7 +118,7 @@ const GroupInfoPage = () => {
     }
 
     useEffect(() => {
-        getGroupData({pageNumber: 0, pageSize: 5});
+        getGroupData({pageNumber: pageNumber, pageSize: rowsPerPage});
     }, [id])
 
     useEffect(() => {
@@ -130,53 +145,33 @@ const GroupInfoPage = () => {
             </div>
 
             <div className="table-section">
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>id</TableCell>
-                            <TableCell>Email</TableCell>
-                            {/* <TableCell>Actions</TableCell> */}
-                        </TableRow>
-                    </TableHead>
-
-                        <TableBody>
-                            {mailList.map((row) => {
-                                    emailId++;
-                                return (
-                                    <TableRow key={row.id}>
-                                    <TableCell>{emailId}</TableCell>
-                                    <TableCell>{row.emailAddress}</TableCell>
-                                    {/* <TableCell>
-                                        <Stack direction="row" spacing={2}>
-                                        <button className="action-btn">
-                                            <EditIcon color="info" />
-                                        </button>
-                                        <button className="action-btn">
-                                            <DeleteIcon color="error" />
-                                        </button>
-                                        </Stack>
-                                    </TableCell> */}
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-
-                </Table>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={totalElements}
-                    rowsPerPage={rowsPerPage}
-                    page={pageNumber}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                <DataGrid 
+                    columns={columns}
+                    rows={mailList}
+                    pagination
+                    paginationMode="server"
+                    onPaginationModelChange={handleChangeRowsPerPage}
+                    paginationModel={paginationModel}
+                    initialState={{
+                        
+                        pagination: {paginationModel:
+                             {pageSize: rowsPerPage, page:pageNumber}}
+                    }
+                    }
+                    
+                    pageSizeOptions={[10,25, 50, 100]}
+                    rowCount={totalElements}
+                    slots={{
+                        toolbar: CustomToolBar
+                    }}
+                    
+                />
             </div>
             {isLoading && 
             <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>}
             
         </div>
-            {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} setGroupName={setGroupName} saveNewName={saveNewGroupName}/>}
+            {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} setGroupName={setGroupName} setShowGroupChangeModal={setShowGroupChangeModal} id={id}/>}
     
     
     

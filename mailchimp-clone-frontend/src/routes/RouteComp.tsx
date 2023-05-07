@@ -12,6 +12,7 @@ import GroupInfoPage from '../pages/GroupInfoPage';
 import EmailListInfoPage from '../pages/EmailListInfoPage';
 import { API } from '../utils/API';
 import ChangeGroupNameContext, { ChangeGroupNameContextProvider } from '../context/NameChangeContext';
+import { ChangeListNameContextProvider } from '../context/ListNameChangeContext';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
@@ -107,7 +108,7 @@ const refresh = async ({token}: any) => {
           <Route path='/groups' element={<Groups />}/>
           <Route path='/groups/:id/:name' element={<ChangeGroupNameContextProvider><GroupInfoPage /></ChangeGroupNameContextProvider>} />
           <Route path='/email-lists' element={<EmailLists />} />
-          <Route path='/email-lists/:id/:name' element={<EmailListInfoPage />} />
+          <Route path='/email-lists/:id/:name' element={<ChangeListNameContextProvider><EmailListInfoPage /></ChangeListNameContextProvider>} />
     </Routes>
   )
 }
