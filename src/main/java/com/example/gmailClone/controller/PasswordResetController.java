@@ -28,4 +28,5 @@ public class PasswordResetController {
     public ResponseEntity<String> checkOtp(@PathVariable String email, @PathVariable String otp) {
         return passwordResetService.checkOtp(email, otp);
     }
+
 }

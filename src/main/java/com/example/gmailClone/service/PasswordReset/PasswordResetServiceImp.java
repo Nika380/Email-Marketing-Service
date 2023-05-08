@@ -1,13 +1,16 @@
 package com.example.gmailClone.service.PasswordReset;
 
 import com.example.gmailClone.OTP.OTPRepo;
+import com.example.gmailClone.dto.ChangePasswordDto;
 import com.example.gmailClone.dto.PasswordResetDto;
 import com.example.gmailClone.repository.UserRepo;
+import com.example.gmailClone.security.SecUser;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -88,6 +91,17 @@ public class PasswordResetServiceImp implements PasswordResetInterface{
             return ResponseEntity.badRequest().body("Does not Match");
         }
 
+    }
+
+    public ResponseEntity<?> changePassword(SecUser user, ChangePasswordDto dto) {
+        var userToUpdate = userRepo.findByEmail(user.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User Does Not Exists"));
+        if(!passwordEncoder.matches(dto.getOldPassword(), userToUpdate.getPassword())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Old Password is incorrect");
+        }
+
+        userToUpdate.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepo.save(userToUpdate);
+        return ResponseEntity.status(201).body("Password Changed Successfully");
     }
     public static String generateOTP() {
         Random random = new Random();

@@ -268,5 +268,45 @@ public class MailGroupsService {
         }
     }
 
+    public ResponseEntity<String> addEmailAddressToList(SecUser user, int listId, String emailAddress) {
+        var list = listRepo.findById(listId).orElseThrow(() -> new NotFoundException("List Does Not Exists"));
+        if(!list.getListOwner().equals(user.getUsername())) {
+            return ResponseEntity.status(400).body("List Does Not Belong To This User");
+        }
+        addEmailAddress(emailAddress);
+        var email = recipientRepo.findMailRecipientByEmailAddress(emailAddress).orElseThrow();
+        var listRecipients = list.getMailRecipients();
+
+        for(MailRecipient recipient : listRecipients) {
+            if(recipient.getEmailAddress().equals(emailAddress)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Is Already In The List");
+            }
+        }
+        listRecipients.add(email);
+        list.setMailRecipients(listRecipients);
+        listRepo.save(list);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Email Added To List");
+    }
+
+    public ResponseEntity<String> addListToGroup(SecUser user, int groupId, int listId) {
+        var group = groupRepo.findById(groupId).orElseThrow(() -> new NotFoundException("Group Does Not Exists"));
+        var list = listRepo.findById(listId).orElseThrow(() -> new NotFoundException("List Does Not Exists"));
+
+        if(!(list.getListOwner().equals(user.getUsername())) || !(group.getGroupOwner().equals(user.getUsername()))) {
+            return ResponseEntity.status(400).body("List Or Group Does Not Belong To User");
+        }
+
+        var groupLists = group.getBulkMailLists();
+        for(BulkMailList list1 : groupLists) {
+            if(list1.equals(list)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("List Is Already In Group");
+            }
+        }
+        groupLists.add(list);
+        group.setBulkMailLists(groupLists);
+        groupRepo.save(group);
+        return ResponseEntity.status(HttpStatus.CREATED).body("List Added To Group");
+    }
+
 
 }

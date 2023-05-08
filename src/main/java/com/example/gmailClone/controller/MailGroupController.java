@@ -71,12 +71,12 @@ public class MailGroupController {
         return mailGroupsService.findGroupById(groupId, user);
     }
 
-    @PostMapping("/change-name/{groupId}")
+    @PutMapping("/change-name/{groupId}")
     public ResponseEntity<?> changeGroupName(@RequestBody GroupNameChangeDto dto, @PathVariable int groupId, @AuthenticationPrincipal SecUser user) {
         return mailGroupsService.changeGroupName(dto, groupId, user);
     }
 
-    @PostMapping("/change-list-name/{listId}")
+    @PutMapping("/change-list-name/{listId}")
     public ResponseEntity<?> changeListName(@RequestBody ListNameChangeDto dto, @PathVariable int listId, @AuthenticationPrincipal SecUser user) {
         return mailGroupsService.changeListName(dto, user, listId);
     }
@@ -90,5 +90,15 @@ public class MailGroupController {
     @DeleteMapping("/delete-list/{listId}")
     public ResponseEntity<?> deleteList(@AuthenticationPrincipal SecUser user, @PathVariable int listId) {
         return mailGroupsService.deleteList(listId, user);
+    }
+
+    @PutMapping("/add-email-to-list/{listId}/{emailAddress}")
+    public ResponseEntity<?> addNewEmailToList(@AuthenticationPrincipal SecUser user, @PathVariable int listId, @PathVariable String emailAddress) {
+        return mailGroupsService.addEmailAddressToList(user, listId, emailAddress);
+    }
+
+    @PutMapping("/add-list-to-group/{groupId}/{listId}")
+    public ResponseEntity<?> addNewListToGroup(@PathVariable int groupId, @PathVariable int listId, @AuthenticationPrincipal SecUser user) {
+        return mailGroupsService.addListToGroup(user, groupId, listId);
     }
 }
