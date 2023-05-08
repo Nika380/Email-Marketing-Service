@@ -6,10 +6,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class GmailCloneApplication {
+public class EmailMarketingService {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GmailCloneApplication.class, args);
+		SpringApplication.run(EmailMarketingService.class, args);
 	}
 
 }

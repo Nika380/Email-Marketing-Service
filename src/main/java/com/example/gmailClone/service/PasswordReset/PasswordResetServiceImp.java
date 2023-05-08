@@ -33,7 +33,7 @@ public class PasswordResetServiceImp implements PasswordResetInterface{
     @Value("${spring.mail.username}")
     private String owner;
     @Override
-    public String resetPassword(PasswordResetDto dto) {
+    public ResponseEntity<String> resetPassword(PasswordResetDto dto) {
         var checkUser = userRepo.findByEmail(dto.getEmail()).isPresent();
         if(checkUser) {
             var userOTP = otpRepo.findByUserEmail(dto.getEmail())
@@ -44,11 +44,11 @@ public class PasswordResetServiceImp implements PasswordResetInterface{
                 user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
                 userRepo.save(user);
 
-                return "Password Changed Successfully";
+                return ResponseEntity.status(201).body("Password Changed Successfully");
             }
-            return "Username OR OTP Is Incorrect";
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username OR OTP Is Incorrect");
         }
-        return "Username Does Not exists";
+        return ResponseEntity.status(400).body("Username Does Not exists");
     }
 
     @Override

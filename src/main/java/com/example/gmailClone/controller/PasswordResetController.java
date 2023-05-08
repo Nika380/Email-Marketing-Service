@@ -16,7 +16,7 @@ public class PasswordResetController {
     private final PasswordResetServiceImp passwordResetService;
 
     @PostMapping
-    public String resetPassword(@RequestBody PasswordResetDto dto) {
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetDto dto) {
         return passwordResetService.resetPassword(dto);
     }
     @PostMapping("/send-otp/{email}")
