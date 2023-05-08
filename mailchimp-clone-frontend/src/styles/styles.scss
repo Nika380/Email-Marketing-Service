@@ -13,6 +13,24 @@ body{
 button{
     cursor: pointer;
 }
+.loading{
+    z-index: 20;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    background-color: rgba(193, 193, 193, 0.283);
+    h1{
+        font-family: Urbanist;
+        font-weight: 400;
+    }
+}
 .home-page{
     display: flex;
     flex-direction: column;
@@ -72,6 +90,16 @@ button{
     }
 }
 
+.change-password {
+    width: calc(100% - 70px);
+    height: 100vh;
+    margin-left: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    
+}
 @import './components/header';
 @import './components/homePageMiddleSection';
 @import './login';
@@ -87,3 +115,4 @@ button{
 @import './email-lists';
 @import './email-list-info';
 @import './modals/create-group-modal';
+@import './modals/create-new-list-modal';

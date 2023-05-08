@@ -19,8 +19,6 @@ const PasswordReset = () => {
     const [email, setEmail] = useState<string>('');
     const [otpMatch, setOtpMatch] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('Check your email');
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
@@ -64,7 +62,7 @@ const PasswordReset = () => {
         const info: resetPasswordInfo = {
             email: email,
             otp: otp,
-            newPassword: password,
+            newPassword: data.password,
         };
         console.log(data)
 

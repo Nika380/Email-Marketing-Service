@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 import BulkMailModal from '../modals/BulkMailModal';
 import BombEmailModal from '../modals/BombEmailModal';
 import SideMenu from '../components/SideMenu';
+import { API } from '../utils/API';
 
 const bulkMail = require('../images/bulk-email.png');
 const bombMail = require('../images/bomb-email.png');
-
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -32,6 +32,8 @@ const Dashboard = () => {
       setShowBombMailModal(false);
   }
   }
+
+
 
   return (
     <>

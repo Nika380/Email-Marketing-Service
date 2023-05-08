@@ -2,19 +2,19 @@ import { Button, Stack, TextField } from '@mui/material'
 import { useState } from 'react'
 import { API } from '../utils/API';
 
-const ChangeGroupNameModal = ({onModalClose, groupName, setGroupName, setShowGroupChangeModal, id}: any) => {
+const ChangeListNameModal = ({onModalClose, listName, setListName, setShowListNameChangeModal, id}: any) => {
 
-    const [newGroupName, setNewGroupName] = useState<string>(groupName);
+    const [newListName, setNewListName] = useState<string>(listName);
     const [errorText, setErrorText] = useState<string>("");
     const [showErrorText, setShowErrorText] = useState<boolean>(true);
 
-    const saveNewGroupName = async (newName: string) => {
+    const saveNewListName = async (newName: string) => {
       const jwt = localStorage.getItem("jwtToken");
       const tok = JSON.parse(jwt || "");
       try {
-          const response = await API.put(`/groups/change-name/${id}`, 
+          const response = await API.put(`/groups/change-list-name/${id}`, 
           {
-              newGroupName: newName
+              newListName: newName
           },
           {
               headers: {
@@ -22,11 +22,12 @@ const ChangeGroupNameModal = ({onModalClose, groupName, setGroupName, setShowGro
               }
           }
           );
-            setGroupName(newName);
-            setShowGroupChangeModal(false);
+            setListName(newName);
+            setShowListNameChangeModal(false);
+            console.log(response)
           
       } catch (error) {
-          setErrorText("Group With This Name Already Exists");
+          setErrorText("List With This Name Already Exists");
           setShowErrorText(true);
           setTimeout(() => {
             setShowErrorText(false);
@@ -36,16 +37,16 @@ const ChangeGroupNameModal = ({onModalClose, groupName, setGroupName, setShowGro
   }
 
   return (
-    <div className='group-name-modal close' onClick={(e) => onModalClose(e)}>
+    <div className='list-name-modal close' onClick={(e) => onModalClose(e)}>
         <div className="modal">
             <TextField sx={{width:"100%"}}
-                label="Change Group Name"
-                value={newGroupName}
-                onChange={(e) => setNewGroupName(e.target.value)}
+                label="Change List Name"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
                 helperText={showErrorText ? errorText : null}
                />
             <Stack direction="row-reverse" justifyContent="center" paddingTop="120px" spacing={5}>
-                <Button sx={{textTransform:"none"}} variant='contained' onClick={() => saveNewGroupName(newGroupName)}>Save</Button>
+                <Button sx={{textTransform:"none"}} variant='contained' onClick={() => saveNewListName(newListName)}>Save</Button>
                 <Button sx={{textTransform:"none"}} variant='outlined' color='error' className='close' onClick={(e) => onModalClose(e)}>Cancel</Button>
             </Stack>
         </div>
@@ -53,4 +54,4 @@ const ChangeGroupNameModal = ({onModalClose, groupName, setGroupName, setShowGro
   )
 }
 
-export default ChangeGroupNameModal
+export default ChangeListNameModal

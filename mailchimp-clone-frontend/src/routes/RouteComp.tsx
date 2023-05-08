@@ -12,6 +12,8 @@ import GroupInfoPage from '../pages/GroupInfoPage';
 import EmailListInfoPage from '../pages/EmailListInfoPage';
 import { API } from '../utils/API';
 import ChangeGroupNameContext, { ChangeGroupNameContextProvider } from '../context/NameChangeContext';
+import { ChangeListNameContextProvider } from '../context/ListNameChangeContext';
+import ChangePassword from '../pages/ChangePassword';
 
 const RouteComp = () => {
     const { auth, setAuth }: any = useContext(AuthContext);
@@ -38,8 +40,8 @@ const RouteComp = () => {
 
     const refreshToken = async () => {
       const checkRefreshToken = JSON.parse(localStorage.getItem("refreshToken") || "null");
-      if(checkRefreshToken === "null") {
-        return null;
+      if(checkRefreshToken === null) {
+        return ;
       }
       const checkJwtToken = JSON.parse(localStorage.getItem("jwtToken") || "null");
       if(checkJwtToken === null || checkJwtToken.expireTime < new Date()) {
@@ -107,7 +109,8 @@ const refresh = async ({token}: any) => {
           <Route path='/groups' element={<Groups />}/>
           <Route path='/groups/:id/:name' element={<ChangeGroupNameContextProvider><GroupInfoPage /></ChangeGroupNameContextProvider>} />
           <Route path='/email-lists' element={<EmailLists />} />
-          <Route path='/email-lists/:name' element={<EmailListInfoPage />} />
+          <Route path='/email-lists/:id/:name' element={<ChangeListNameContextProvider><EmailListInfoPage /></ChangeListNameContextProvider>} />
+          <Route path='/change-password' element={<ChangePassword />}/>
     </Routes>
   )
 }
