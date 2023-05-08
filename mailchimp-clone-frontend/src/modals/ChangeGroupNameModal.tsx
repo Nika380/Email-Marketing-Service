@@ -12,7 +12,7 @@ const ChangeGroupNameModal = ({onModalClose, groupName, setGroupName, setShowGro
       const jwt = localStorage.getItem("jwtToken");
       const tok = JSON.parse(jwt || "");
       try {
-          const response = await API.post(`/groups/change-name/${id}`, 
+          const response = await API.put(`/groups/change-name/${id}`, 
           {
               newGroupName: newName
           },

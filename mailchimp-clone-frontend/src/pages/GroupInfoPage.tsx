@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet'
 import SideMenu from '../components/SideMenu'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
-import { Stack, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
+import { Button, Stack, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SetStateAction, useContext, useEffect, useState } from 'react';
@@ -10,6 +10,8 @@ import { API } from '../utils/API';
 import LoadingCube from '../loading-animation/LoadingCube';
 import ChangeGroupNameContext from '../context/NameChangeContext';
 import { DataGrid, GridPaginationModel, GridValueGetterParams, GridToolbarExport  } from '@mui/x-data-grid';
+import AddListToGroupDrawer from '../modals/AddListToGroupDrawer';
+import BulkMailModal from '../modals/BulkMailModal';
 
 interface mailList{
     id: number,
@@ -48,6 +50,8 @@ const GroupInfoPage = () => {
         pageSize: 10,
         page: 0,
       });
+    const [showbulkMailModal, setShowBulkMailModal] = useState<boolean>(false);
+
     let emailId = 0;
     const columns = [
         {
@@ -76,6 +80,15 @@ const GroupInfoPage = () => {
         setShowGroupChangeModal(true);
     }
 
+    const openBulkMailModal = () => {
+        setShowBulkMailModal(true);
+    }
+    
+    const closeBulkMailModal = (event: any) => {
+        if(event.target.classList.contains("close")) {
+            setShowBulkMailModal(false);
+        }
+    }
     
     const handleChangeRowsPerPage = async (newPaginationModel: GridPaginationModel) => {
         await getGroupData({
@@ -141,7 +154,12 @@ const GroupInfoPage = () => {
                     <button onClick={openGroupChangeModal} className='name-edit-btn'><EditIcon color='info' sx={{width: "100%", height:"30px"}}/></button>
                 </Tooltip>
                 </h1>
-                
+                <Button
+                 sx={{textTransform:"none", position:'absolute', right:'250px'}}
+                 color="warning"
+                 onClick={() => setShowBulkMailModal(true)}
+                 >Send Bulk Mail</Button>
+                <AddListToGroupDrawer groupId={id}/>
             </div>
 
             <div className="table-section">
@@ -173,7 +191,7 @@ const GroupInfoPage = () => {
         </div>
             {showGroupChangeModal && <ChangeGroupNameModal onModalClose={closeGroupChangeModal} groupName={groupName} setGroupName={setGroupName} setShowGroupChangeModal={setShowGroupChangeModal} id={id}/>}
     
-    
+            {showbulkMailModal && <BulkMailModal groupToSendMail={name || ""} closeModal={closeBulkMailModal}/>}
     
     </>
   )

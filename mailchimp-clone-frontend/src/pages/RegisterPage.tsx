@@ -24,12 +24,7 @@ interface registerInfo {
 const RegisterPage = () => {
 
     const navigate = useNavigate();
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [birthDate, setBirthDate] = useState<Date | null>(null);
     const [verify, setVerify] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');
     const [text, setText] = useState<string>('Send Verification Code');

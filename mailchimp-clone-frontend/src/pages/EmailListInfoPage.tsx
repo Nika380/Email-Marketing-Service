@@ -11,6 +11,7 @@ import LoadingCube from '../loading-animation/LoadingCube';
 import { DataGrid, GridPaginationModel, GridToolbarExport } from '@mui/x-data-grid';
 import ChangeListNameModal from '../modals/ChangeListNameModal';
 import ListNameChangeContext from '../context/ListNameChangeContext';
+import AddEmailToListDrawer from '../modals/AddEmailToListDrawer';
 
 interface mailRecipient {
   id: number,
@@ -21,14 +22,13 @@ interface mailRecipient {
 const CustomToolBar = () => {
   return (
     <Stack direction="row" justifyContent="end">
-          <Tooltip title="Export Table Data">
-          <GridToolbarExport
-           csvOptions={{ fileName: 'Email-Address-List' }}
-           />
+      <Tooltip title="Export Table Data">
+        <GridToolbarExport csvOptions={{ fileName: 'Email-Address-List' }} />
       </Tooltip>
-      </Stack>
-  )
-}
+    </Stack>
+  );
+};
+
 
 
 const EmailListInfoPage = () => {
@@ -139,7 +139,7 @@ const EmailListInfoPage = () => {
                   </Tooltip>
                   
                   </h1>
-                  
+                  <AddEmailToListDrawer listId={id}/>
               </div>
 
               <div className="table-section">
@@ -174,3 +174,4 @@ const EmailListInfoPage = () => {
 }
 
 export default EmailListInfoPage
+

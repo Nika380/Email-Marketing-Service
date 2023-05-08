@@ -20,6 +20,7 @@ export const LoginPage = () => {
             email: email,
             password: password
            });
+           console.log(response)
            if(response.status === 201) {
                 const now = new Date();
                 const expireTime = now.getTime() + 10 * 60 * 1000;

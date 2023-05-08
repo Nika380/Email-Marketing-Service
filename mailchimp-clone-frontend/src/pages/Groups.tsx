@@ -5,7 +5,7 @@ import { API } from '../utils/API'
 import LoadingCube from '../loading-animation/LoadingCube'
 import BulkMailModal from '../modals/BulkMailModal'
 import { Helmet } from 'react-helmet'
-import { Button } from '@mui/material'
+import { Button, CircularProgress } from '@mui/material'
 import CreateNewGroupModal from '../modals/CreateNewGroupModal'
 
 interface Group {
@@ -31,6 +31,8 @@ const Groups = () => {
     const [showBulkMailModal, setShowBulkMailModal] = useState<boolean>(false);
     const [groupName, setGroupName] = useState<string>("");
     const [showCreateGroupModal, setShowCreateGroupModal] = useState<boolean>(false);
+    const [deleteGroupLoading, setDeleteGroupLoading] = useState<boolean>(false);
+    const [loadingText, setLoadingText] = useState<string>("");
 
     const closeBulkMailModal = (event: any) => {
       if(event.target.classList.contains("close")){
@@ -55,6 +57,18 @@ const Groups = () => {
 
     const openCreateGroupModal = () => {
       setShowCreateGroupModal(true);
+    }
+
+    const groupDeleteLoading = () => {
+      setLoadingText("Group is Deleting, Please Wait ...");
+      setDeleteGroupLoading(true);
+    }
+
+    const groupDeletedSuccessfully = () => {
+      setLoadingText("Group Deleted Successfully");
+      setTimeout(() => {
+        setDeleteGroupLoading(false);
+      }, 3000)
     }
 
     const getGroups = async () => {
@@ -103,7 +117,16 @@ const Groups = () => {
                 number += list?.mailRecipients.length
               })
               return (
-                <GroupsComponent key={group.id} groupName={group?.groupName} emailNumber={number} id={group?.id} openBulkModal={openBulkMailModal} refreshFunction={refreshPage}/>
+                <GroupsComponent
+                 key={group.id}
+                 groupName={group?.groupName} 
+                 emailNumber={number} 
+                 id={group?.id} 
+                 openBulkModal={openBulkMailModal} 
+                 refreshFunction={refreshPage}
+                 deletedSuccessfully={groupDeletedSuccessfully}
+                 startGroupDelete={groupDeleteLoading}
+                 />
               )
             })}
           </div>
@@ -116,6 +139,13 @@ const Groups = () => {
 
         {isLoading &&
           <div className='loading-info'><LoadingCube /> <h1>Loading ...</h1></div>}
+
+        {deleteGroupLoading &&
+              <div className="loading">
+                <CircularProgress color='secondary' />
+                <h1>{loadingText}</h1>
+              </div>
+            }
           
           </>
   )

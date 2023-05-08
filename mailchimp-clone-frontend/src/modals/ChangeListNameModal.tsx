@@ -12,7 +12,7 @@ const ChangeListNameModal = ({onModalClose, listName, setListName, setShowListNa
       const jwt = localStorage.getItem("jwtToken");
       const tok = JSON.parse(jwt || "");
       try {
-          const response = await API.post(`/groups/change-list-name/${id}`, 
+          const response = await API.put(`/groups/change-list-name/${id}`, 
           {
               newListName: newName
           },

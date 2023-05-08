@@ -17,7 +17,6 @@ const EmailListComponent = ({listName, id, emailCount, pageRefresh, deletedSucce
             Authorization: `Bearer ${tok?.token}`
           }
         });
-        console.log(response);
         deletedSuccessfully();
         setTimeout(() => {
           pageRefresh();

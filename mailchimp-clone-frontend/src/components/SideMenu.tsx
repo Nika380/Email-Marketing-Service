@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import GroupsIcon from '@mui/icons-material/Groups';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -49,6 +49,7 @@ export default SideMenu
 
 
 function AccountMenu({logOutFunction}: any) {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -69,7 +70,7 @@ function AccountMenu({logOutFunction}: any) {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 40, height: 40 }}>NN</Avatar>
+            <Avatar sx={{ width: 40, height: 40 }}></Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -109,14 +110,14 @@ function AccountMenu({logOutFunction}: any) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
+        {/* <MenuItem onClick={handleClose}>
           <Avatar /> Profile
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <Avatar /> My account
         </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
+        <Divider /> */}
+        <MenuItem onClick={() => navigate('/change-password')}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>

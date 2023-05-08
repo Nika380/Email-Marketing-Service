@@ -90,6 +90,16 @@ button{
     }
 }
 
+.change-password {
+    width: calc(100% - 70px);
+    height: 100vh;
+    margin-left: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    
+}
 @import './components/header';
 @import './components/homePageMiddleSection';
 @import './login';
