@@ -1,5 +1,5 @@
-import { Button, Stack, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import { Autocomplete, Button, Stack, TextField } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import { API } from '../utils/API';
 import { array } from 'yup';
 
@@ -12,16 +12,17 @@ interface list {
 const CreateNewGroupModal = ({closeModal, pageRefresh, closeWithFunction} : any) => {
 
   const [listArray, setListArray] = useState<list[]>([]);
-  const [listEntity, setListEntity] = useState<list>({id: 0, listName: ""});
+  const [listEntity, setListEntity] = useState<list | null>({id: 0, listName: ""});
   const [groupName, setGroupName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showListErrorText, setShowListErrorText] = useState<boolean>(false);
   const [showGroupErrorText, setShowGroupErrorText] = useState<boolean>(false);
   const [groupErrorText, setGroupErrorText] = useState<string>("");
   const [listErrorText, setListErrorText] = useState<string>("");
+  const [listOptions, setListOptions] = useState<list[]>([]);
 
   const addListNameToArray = async () => {
-    const listExists = listArray.some((list) => list.listName === listEntity.listName);
+    const listExists = listArray.some((list) => list.listName === listEntity?.listName);
     
     if(listExists) {
       setListErrorText("List Is already in group");
@@ -33,7 +34,7 @@ const CreateNewGroupModal = ({closeModal, pageRefresh, closeWithFunction} : any)
       const jwt = localStorage.getItem("jwtToken");
       const tok = JSON.parse(jwt || "");
       try {
-        const response = await API.get(`/groups/find-list/${listEntity.listName}`, {
+        const response = await API.get(`/groups/find-list/${listEntity?.listName}`, {
           headers: {
             Authorization: `Bearer ${tok?.token}`
           }
@@ -89,6 +90,33 @@ const CreateNewGroupModal = ({closeModal, pageRefresh, closeWithFunction} : any)
     
   }
 
+  const getListsInfo = async () => {
+    const jwt = localStorage.getItem("jwtToken");
+    const tok = JSON.parse(jwt || "");
+    try {
+      const response = await API.get(
+        `/groups/list`,
+        {
+          headers: {
+            Authorization: `Bearer ${tok?.token}`
+          }
+        }
+      );
+      const lists = response.data.map((list: any) => {
+        return {
+          id: list.id,
+          listName: list.listName            }
+      });
+      setListOptions(lists)
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getListsInfo()
+  }, [])
+
   return (
     <>
     <div className='create-group-modal close' onClick={closeModal}>
@@ -97,7 +125,17 @@ const CreateNewGroupModal = ({closeModal, pageRefresh, closeWithFunction} : any)
               <TextField label="Group Name" value={groupName} onChange={(e) => setGroupName(e.target.value)} helperText={showGroupErrorText ? groupErrorText : null}/>
 
               <Stack spacing={2}>
-                <TextField label="List Name" onChange={(e) => setListEntity({listName: e.target.value, id: 24})} value={listEntity.listName} helperText={showListErrorText ? listErrorText : null}/>
+                {/* <TextField label="List Name" onChange={(e) => setListEntity({listName: e.target.value, id: 24})} value={listEntity.listName} helperText={showListErrorText ? listErrorText : null}/> */}
+                <Autocomplete
+                options={listOptions}
+                getOptionLabel={(list) => list?.listName}
+                renderInput={(params) =>
+                   (<TextField {...params}
+                    label="Add List"  
+                  />)
+                  }
+                onChange={(event, newValue) => setListEntity(newValue)}
+                />
                 <Stack direction="row" justifyContent="end">
                   <Button sx={{textTransform:"none"}} color='info' variant='outlined' onClick={addListNameToArray}>Add List To Group</Button>
                 </Stack>
