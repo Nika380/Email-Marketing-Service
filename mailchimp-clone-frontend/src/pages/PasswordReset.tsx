@@ -17,17 +17,17 @@ interface resetPasswordInfo {
 const PasswordReset = () => {
     const [linkSent, setLinkSent] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
-    const [otpMatch, setOtpMatch] = useState<boolean>(false);
+    const [otpMatch, setOtpMatch] = useState<boolean>(true);
     const [otp, setOtp] = useState<string>('');
     const [message, setMessage] = useState<string>('Check your email');
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const schema = yup.object().shape({
-      password: yup.string().min(8).required(),
+      password: yup.string().min(8, "Password Must Be At Least 8 Characters Long").required("This Field Is Required!"),
       confirmPassword: yup.string()
     .nullable()
     .oneOf([yup.ref('password', {})], 'Passwords does not match')
-    .required('passwords does not match')
+    .required('This Field Is Required!')
 
 
 
@@ -106,14 +106,14 @@ const PasswordReset = () => {
                       </Stack>
             </> : 
                <form onSubmit={handleSubmit(resetPassword)}>
-                 <Stack spacing={2} alignItems='center'>
+                 <Stack spacing={2} >
                   <TextField
                     type={showPassword ? 'text' : 'password'}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={handleClickShowPassword} edge="end">
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
                       )
@@ -121,6 +121,11 @@ const PasswordReset = () => {
                     label="Password"
                     // onChange={(e) => setPassword(e.target.value)}
                     placeholder="New Password"
+                    helperText={
+                      <FormHelperText style={{ color: 'red' }}>
+                        {errors.password?.message?.toString()}
+                    </FormHelperText>
+                    }
                     {...register("password")}
                   />
 
@@ -130,7 +135,7 @@ const PasswordReset = () => {
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={handleClickShowPassword} edge="end">
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
                       )
@@ -146,7 +151,7 @@ const PasswordReset = () => {
                     {...register("confirmPassword")}
 
                   />
-                  <Button sx={{textTransform:'none', width:'50%'}} variant='contained' type='submit' >Submit</Button>
+                  <Button sx={{textTransform:'none', width:'30%', left:"70%" }}  variant='contained' type='submit' >Submit</Button>
               </Stack>
                </form>
 
